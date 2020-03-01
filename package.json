@@ -1,0 +1,20 @@
+{
+  "name": "realtywebapp",
+  "version": "1.0.0",
+  "description": "Web App for realty search and proposal placing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "server": "nodemon server"
+  },
+  "author": "Sergei Petrov",
+  "license": "MIT",
+  "dependencies": {
+    "config": "^3.3.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
