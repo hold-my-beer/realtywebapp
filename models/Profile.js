@@ -19,8 +19,7 @@ const ProfileSchema = new mongoose.Schema({
     type: String
   },
   userPhoto: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'userPhoto'
+    type: String
   },
   date: {
     type: Date,
