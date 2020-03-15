@@ -303,6 +303,12 @@ router.put(
         return res.status(404).json({ msg: 'Предложение не найдено' });
       }
 
+      if (proposal.user.toString() !== req.user.id) {
+        return res.status(401).json({
+          msg: 'Пользователь не имеет прав на изменение запрашиваемого ресурса'
+        });
+      }
+
       if (proposalPhotos) proposal.proposalPhotos = proposalPhotos;
       if (dealType) proposal.dealType = dealType;
       if (address) proposal.address = address;
@@ -339,7 +345,19 @@ router.put(
 // @access  Private
 router.delete('/:id', auth, async (req, res) => {
   try {
-    await Proposal.findByIdAndRemove(req.params.id);
+    const proposal = await Proposal.findById(req.params.id);
+
+    if (!proposal) {
+      return res.status(404).json({ msg: 'Предложение не найдено' });
+    }
+
+    if (proposal.user.toString() !== req.user.id) {
+      return res.status(401).json({
+        msg: 'Пользователь не имеет прав на изменение запрашиваемого ресурса'
+      });
+    }
+
+    await proposal.remove();
 
     return res.json({ msg: 'Предложение удалено' });
   } catch (err) {
