@@ -43,6 +43,10 @@ const ProposalSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  isLastFloor: {
+    type: Boolean,
+    required: true
+  },
   roomsNumber: {
     type: Number,
     required: true
