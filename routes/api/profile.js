@@ -3,6 +3,8 @@ const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 
+const Search = require('../../models/Search');
+const Proposal = require('../../models/Proposal');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
@@ -100,7 +102,13 @@ router.post(
 // @access  Private
 router.delete('/', auth, async (req, res) => {
   try {
-    // Delete profile
+    // Delete user search criteria
+    await Search.deleteMany({ user: req.user.id });
+
+    // Delete user proposals
+    await Proposal.deleteMany({ user: req.user.id });
+
+    // Delete user profile
     await Profile.findOneAndRemove({ user: req.user.id });
 
     // Delete user account
