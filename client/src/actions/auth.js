@@ -1,5 +1,34 @@
 import axios from 'axios';
-import { LOGIN_SUCCESS, LOGIN_FAIL } from './types';
+import {
+  USER_LOADED,
+  AUTH_ERROR,
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  SET_AUTH_LOADING
+} from './types';
+import setAuthToken from '../utils/setAuthToken';
+
+// Load User
+export const loadUser = () => async dispatch => {
+  if (localStorage.token) {
+    setAuthToken(localStorage.token);
+  }
+
+  dispatch(setAuthLoading());
+
+  try {
+    const res = await axios.get('/api/auth');
+
+    dispatch({
+      type: USER_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: AUTH_ERROR
+    });
+  }
+};
 
 // Login User
 export const login = (email, password) => async dispatch => {
@@ -18,6 +47,8 @@ export const login = (email, password) => async dispatch => {
       type: LOGIN_SUCCESS,
       payload: res.data
     });
+
+    dispatch(loadUser());
   } catch (err) {
     const errors = err.response.data.errors;
 
@@ -29,4 +60,11 @@ export const login = (email, password) => async dispatch => {
       type: LOGIN_FAIL
     });
   }
+};
+
+// Set Auth Loading
+export const setAuthLoading = () => dispatch => {
+  dispatch({
+    type: SET_AUTH_LOADING
+  });
 };
