@@ -57,7 +57,7 @@ const Login = ({ login, isAuthenticated }) => {
         <input type="submit" className="btn btn-primary" value="Войти" />
       </form>
       <p>
-        Не зарегистрированы? <Link to="register.html">Регистрация</Link>
+        Не зарегистрированы? <Link to="/register">Регистрация</Link>
       </p>
     </Fragment>
   );
