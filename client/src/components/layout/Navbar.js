@@ -1,13 +1,17 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { logout } from '../../actions/auth';
 import PropTypes from 'prop-types';
 
 const Navbar = ({ logout, isAuthenticated }) => {
-  useEffect(() => {
-    toggleNavbar();
-  });
+  const toggleMenu = () => {
+    const navButton = document.querySelector('.nav-button');
+    const nav = document.querySelector('.nav');
+
+    navButton.classList.toggle('open');
+    nav.classList.toggle('show');
+  };
 
   const guestLinks = (
     <ul className="medium">
@@ -79,7 +83,7 @@ const Navbar = ({ logout, isAuthenticated }) => {
             </h1>
           </Link>
         </div>
-        <div className="nav-button">
+        <div className="nav-button" onClick={() => toggleMenu()}>
           <div className="nav-button-item"></div>
           <div className="nav-button-item"></div>
           <div className="nav-button-item"></div>
@@ -88,36 +92,6 @@ const Navbar = ({ logout, isAuthenticated }) => {
       <div className="nav">{isAuthenticated ? authLinks : guestLinks}</div>
     </Fragment>
   );
-};
-
-const toggleNavbar = () => {
-  const navButton = document.querySelector('.nav-button');
-  const nav = document.querySelector('.nav');
-
-  /* Functions */
-  const toggleButton = () => {
-    navButton.classList.toggle('open');
-  };
-
-  const toggleNav = () => {
-    nav.classList.toggle('show');
-  };
-
-  /* EVENTS */
-  navButton.addEventListener('click', () => {
-    toggleButton();
-    toggleNav();
-  });
-
-  window.addEventListener('click', e => {
-    if (
-      !e.target.classList.contains('nav-button-item') &&
-      navButton.classList.contains('open')
-    ) {
-      toggleButton();
-      toggleNav();
-    }
-  });
 };
 
 Navbar.propTypes = {
