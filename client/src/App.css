@@ -140,7 +140,7 @@ img {
   margin: 3rem 0;
 }
 
-/* Buttons */
+/* Buttons, Alerts */
 .btn {
   display: inline-block;
   font-size: 1rem;
@@ -156,6 +156,14 @@ img {
   transition: all 0.2s ease-in-out;
 }
 
+.alert {
+  padding: 0.8rem;
+  margin: 1rem 0;
+  opacity: 0.9;
+  background: var(--light-color);
+  color: #333;
+}
+
 .btn-large {
   font-size: 1.2rem;
   padding: 0.6rem 1.5rem;
@@ -167,22 +175,26 @@ img {
   margin-top: 1rem;
 }
 
-.btn-primary {
+.btn-primary,
+.alert-primary {
   background: var(--primary-color);
   color: #fff;
 }
 
-.btn-dark {
+.btn-dark,
+.alert-dark {
   background: var(--dark-color);
   color: var(--light-color);
 }
 
-.btn-danger {
+.btn-danger,
+.alert-danger {
   background: var(--danger-color);
   color: #fff;
 }
 
-.btn-success {
+.btn-success,
+.alert-success {
   background: var(--success-color);
   color: #fff;
 }

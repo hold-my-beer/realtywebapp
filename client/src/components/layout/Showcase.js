@@ -1,8 +1,13 @@
 import React, { Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-const Showcase = props => {
+const Showcase = ({ isAuthenticated }) => {
+  if (isAuthenticated) {
+    return <Redirect to="/profile" />;
+  }
+
   return (
     <Fragment>
       <div className="showcase buy text-white">
@@ -54,6 +59,12 @@ const Showcase = props => {
   );
 };
 
-Showcase.propTypes = {};
+Showcase.propTypes = {
+  isAuthenticated: PropTypes.bool
+};
 
-export default Showcase;
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated
+});
+
+export default connect(mapStateToProps)(Showcase);

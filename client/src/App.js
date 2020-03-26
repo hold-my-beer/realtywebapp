@@ -5,7 +5,9 @@ import store from './store';
 import Navbar from './components/layout/Navbar';
 import Landing from './components/layout/Landing';
 import Showcase from './components/layout/Showcase';
-import Login from './components/auth/Login';
+// import Alert from './components/layout/Alert';
+// import Login from './components/auth/Login';
+import Routes from '../src/components/routing/Routes';
 
 import { loadUser } from './actions/auth';
 
@@ -20,10 +22,12 @@ const App = () => {
     <Provider store={store}>
       <Router>
         <Navbar />
+        {/* <Alert /> */}
         <Switch>
           <Route exact path="/" component={Landing} />
           <Route path="/showcase" component={Showcase} />
-          <Route path="/login" component={Login} />
+          <Route component={Routes} />
+          {/* <Route path="/login" component={Login} /> */}
         </Switch>
       </Router>
     </Provider>
