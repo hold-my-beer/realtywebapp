@@ -7,7 +7,10 @@ import PropTypes from 'prop-types';
 import Spinner from '../layout/Spinner';
 import profilePhoto from '../../img/profilePhoto.jpg';
 
-const Profile = ({ getProfile, profile: { profile, loading } }) => {
+import Moment from 'react-moment';
+import 'moment/locale/ru';
+
+const Profile = ({ getProfile, profile: { profile, loading }, auth }) => {
   useEffect(() => {
     getProfile();
   }, [getProfile]);
@@ -25,15 +28,22 @@ const Profile = ({ getProfile, profile: { profile, loading } }) => {
             </div>
             <div className="profile-content">
               <div className="profile-personal">
-                <h2 className="text-primary">Иван Иванов</h2>
-                <h3>35 лет</h3>
+                <h2 className="text-primary">
+                  {profile.firstName} {profile.secondName}
+                </h2>
+                <h3>
+                  <Moment fromNow ago locale="ru">
+                    {profile.dateOfBirth}
+                  </Moment>
+                </h3>
               </div>
               <div className="profile-contacts">
                 <p>
-                  <strong>Email: </strong> ivan.ivanov@gmail.com
+                  <strong>Email: </strong>{' '}
+                  {auth.user !== null && auth.user.email}
                 </p>
                 <p>
-                  <strong>Телефон: </strong> +7-999-999-99-99
+                  <strong>Телефон: </strong> {profile.phoneNumber}
                 </p>
               </div>
               <div className="profile-actions">
@@ -66,11 +76,13 @@ const Profile = ({ getProfile, profile: { profile, loading } }) => {
 
 Profile.propTypes = {
   getProfile: PropTypes.func.isRequired,
-  profile: PropTypes.object.isRequired
+  profile: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
-  profile: state.profile
+  profile: state.profile,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, { getProfile })(Profile);

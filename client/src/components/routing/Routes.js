@@ -6,6 +6,7 @@ import Alert from '../layout/Alert';
 import Login from '../auth/Login';
 import Register from '../auth/Register';
 import Profile from '../profile/Profile';
+import EditProfile from '../profile/EditProfile';
 
 const Routes = () => {
   return (
@@ -15,6 +16,7 @@ const Routes = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
         <PrivateRoute exact path="/profile" component={Profile} />
+        <PrivateRoute exact path="/edit-profile" component={EditProfile} />
       </Switch>
     </div>
   );
