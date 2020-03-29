@@ -8,3 +8,6 @@ export const LOGOUT = 'LOGOUT';
 export const SET_AUTH_LOADING = 'SET_AUTH_LOADING';
 export const SET_ALERT = 'SET_ALERT';
 export const REMOVE_ALERT = 'REMOVE_ALERT';
+export const GET_PROFILE = 'GET_PROFILE';
+export const PROFILE_ERROR = 'PROFILE_ERROR';
+export const SET_PROFILE_LOADING = 'SET_PROFILE_LOADING';

@@ -14,7 +14,7 @@ const Navbar = ({ logout, isAuthenticated }) => {
   };
 
   const guestLinks = (
-    <ul className="medium">
+    <ul className="medium" onClick={() => toggleMenu()}>
       <li className="my-2">
         <Link to="/search">
           <i className="fas fa-shopping-cart"></i> Купить
@@ -44,7 +44,7 @@ const Navbar = ({ logout, isAuthenticated }) => {
   );
 
   const authLinks = (
-    <ul className="medium">
+    <ul className="medium" onClick={() => toggleMenu()}>
       <li className="my-2">
         <Link to="/search">
           <i className="fas fa-shopping-cart"></i> Купить
