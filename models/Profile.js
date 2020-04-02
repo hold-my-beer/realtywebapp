@@ -19,7 +19,12 @@ const ProfileSchema = new mongoose.Schema({
     type: String
   },
   userPhoto: {
-    type: String
+    id: {
+      type: String
+    },
+    url: {
+      type: String
+    }
   },
   date: {
     type: Date,

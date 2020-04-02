@@ -144,6 +144,7 @@ img {
 .btn {
   display: inline-block;
   font-size: 1rem;
+  line-height: 1.6;
   text-align: center;
   color: var(--dark-color);
   background: var(--light-color);
@@ -217,6 +218,12 @@ form {
   margin: 1rem 0;
 }
 
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 input[type='text'],
 input[type='email'],
 input[type='password'],
@@ -234,12 +241,16 @@ select {
 
 input[type='submit'] {
   display: block;
-  /* margin-top: 0.5rem; */
+  font: inherit;
 }
 
 input[type='checkbox'],
 input[type='radio'] {
   margin-right: 0.3rem;
+}
+
+input[type='file'] {
+  opacity: 0;
 }
 
 /* Navbar */
@@ -395,9 +406,25 @@ input[type='radio'] {
 }
 
 /* Profile */
+.edit-profile-photo-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.edit-profile-actions .btn {
+  margin-bottom: 0.5rem;
+}
+
 .edit-profile-photo {
-  width: 50vw;
-  height: 50vw;
+  width: 100%;
+  height: auto;
 }
 .edit-profile-photo img {
   width: 100%;
@@ -405,26 +432,13 @@ input[type='radio'] {
   object-fit: cover;
 }
 
-.profile {
-  display: grid;
-  grid-template-columns: 1fr;
-  justify-content: center;
+.profile-top {
   width: 100%;
-}
-
-.profile-photo {
-  width: 100%;
-  max-width: 250px;
-  margin: auto;
 }
 
 .profile-photo img {
   width: 100%;
   object-fit: cover;
-}
-
-.profile-content {
-  width: 100%;
 }
 
 .profile-personal,
@@ -692,22 +706,16 @@ input[type='radio'] {
 
   /* Profile */
   .edit-profile-photo {
-    max-width: 200px;
+    max-width: 300px;
     height: auto;
   }
 
-  .profile {
-    width: 100%;
-    max-width: 400px;
-    margin: auto;
-  }
-
-  .profile-photo {
+  .profile-top {
     max-width: 300px;
     margin: auto;
   }
 
-  .profile-content {
+  .profile-actions {
     max-width: 350px;
     margin: auto;
   }
@@ -787,25 +795,6 @@ input[type='radio'] {
     margin-bottom: 2.5rem;
   }
 
-  /* Profile */
-  .edit-profile-content {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  .edit-profile-form {
-    width: 100%;
-    margin-left: 3rem;
-  }
-
-  .profile {
-    grid-template-columns: 1fr 1fr;
-    column-gap: 4rem;
-    min-width: 550px;
-    max-width: unset;
-  }
-
   /* Proposal Page */
   .parameters {
     width: 90%;
@@ -840,6 +829,37 @@ input[type='radio'] {
   .lead {
     font-size: 1.5rem;
     margin-bottom: 1rem;
+  }
+
+  /* Profile */
+  .edit-profile-content {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .edit-profile-photo-group {
+    min-width: 400px;
+  }
+
+  .edit-profile-form {
+    width: 100%;
+    margin-left: 3rem;
+  }
+
+  .profile {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .profile-top {
+    min-width: 400px;
+  }
+
+  .profile-actions {
+    width: 100%;
+    margin-left: 3rem;
   }
 
   /* Proposal Page */

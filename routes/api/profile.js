@@ -97,6 +97,34 @@ router.post(
   }
 );
 
+// @route   POST api/profile/photo
+// @desc    Update profile photo url
+// @access  Private
+router.post('/photo', auth, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { userPhoto } = req.body;
+
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    if (!profile) {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    if (userPhoto) profile.userPhoto = userPhoto;
+
+    await profile.save();
+    return res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
+
 // @route   DELETE api/profile
 // @desc    Delete profile and account
 // @access  Private
