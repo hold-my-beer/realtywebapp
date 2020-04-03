@@ -57,7 +57,11 @@ router.post(
       let profile = new Profile({
         user: user.id,
         firstName,
-        secondName
+        secondName,
+        userPhoto: {
+          photoID: '',
+          photoURL: ''
+        }
       });
       await profile.save();
 

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
+const cloudinary = require('cloudinary');
+const config = require('config');
 
 const Search = require('../../models/Search');
 const Proposal = require('../../models/Proposal');
@@ -49,7 +51,7 @@ router.get('/:userId', async (req, res) => {
 });
 
 // @route   POST api/profile
-// @desc    Create / Update profile
+// @desc    Update profile
 // @access  Private
 router.post(
   '/',
@@ -71,8 +73,8 @@ router.post(
       firstName,
       secondName,
       dateOfBirth,
-      phoneNumber,
-      userPhoto
+      phoneNumber
+      // photoURL
     } = req.body;
 
     try {
@@ -86,7 +88,7 @@ router.post(
       if (secondName) profile.secondName = secondName;
       if (dateOfBirth) profile.dateOfBirth = dateOfBirth;
       if (phoneNumber) profile.phoneNumber = phoneNumber;
-      if (userPhoto) profile.userPhoto = userPhoto;
+      // if (photoURL) profile.userPhoto.photoURL = photoURL;
 
       await profile.save();
       return res.json(profile);
@@ -98,7 +100,7 @@ router.post(
 );
 
 // @route   POST api/profile/photo
-// @desc    Update profile photo url
+// @desc    Update profile photo data
 // @access  Private
 router.post('/photo', auth, async (req, res) => {
   const errors = validationResult(req);
@@ -116,6 +118,42 @@ router.post('/photo', auth, async (req, res) => {
     }
 
     if (userPhoto) profile.userPhoto = userPhoto;
+
+    await profile.save();
+    return res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
+
+// @route   DELETE api/profile/photo
+// @desc    Delete profile photo data
+// @access  Private
+router.delete('/photo', auth, async (req, res) => {
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    if (!profile) {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    const public_id = profile.userPhoto.photoID;
+
+    cloudinary.config({
+      cloud_name: config.get('cloudinary_cloud_name'),
+      api_key: config.get('cloudinary_api_key'),
+      api_secret: config.get('cloudinary_api_secret')
+    });
+
+    await cloudinary.v2.uploader.destroy(public_id, {
+      invalidate: true
+    });
+
+    profile.userPhoto = {
+      photoID: '',
+      photoURL: ''
+    };
 
     await profile.save();
     return res.json(profile);

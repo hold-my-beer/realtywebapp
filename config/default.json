@@ -1,4 +1,7 @@
 {
   "mongoURI": "mongodb+srv://sergei123:sergei123@realtycluster-fad9s.mongodb.net/test?retryWrites=true&w=majority",
-  "jwtSecret": "abigbigsecret"
+  "jwtSecret": "abigbigsecret",
+  "cloudinary_cloud_name": "dax1o7jk6",
+  "cloudinary_api_key": "693317374286323",
+  "cloudinary_api_secret": "WJ6jgnJYqPaBueeHOBQBCzXTNyQ"
 }

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {
   getProfile,
   uploadProfilePhoto,
+  deleteProfilePhoto,
   updateProfile
 } from '../../actions/profile';
 import PropTypes from 'prop-types';
@@ -15,6 +16,7 @@ import defaultAvatar from '../../img/defaultAvatar.png';
 const EditProfile = ({
   getProfile,
   uploadProfilePhoto,
+  deleteProfilePhoto,
   updateProfile,
   profile: { profile, loading },
   history
@@ -24,7 +26,7 @@ const EditProfile = ({
     secondName: '',
     dateOfBirth: '',
     phoneNumber: '',
-    userPhoto: null
+    photoURL: ''
   });
 
   useEffect(() => {
@@ -38,15 +40,15 @@ const EditProfile = ({
           ? ''
           : profile.dateOfBirth.substr(0, 10),
       phoneNumber: loading || !profile.phoneNumber ? '' : profile.phoneNumber,
-      userPhoto: loading || !profile.userPhoto ? null : profile.userPhoto
+      photoURL: loading || !profile.userPhoto ? '' : profile.userPhoto.photoURL
     });
   }, [
     getProfile,
     profile.firstName,
     profile.secondName,
     profile.dateOfBirth,
-    profile.phoneNumber
-    // profile.userPhoto
+    profile.phoneNumber,
+    profile.userPhoto.photoURL
   ]);
 
   const {
@@ -54,7 +56,7 @@ const EditProfile = ({
     secondName,
     dateOfBirth,
     phoneNumber,
-    userPhoto
+    photoURL
   } = formData;
 
   const onUploadChange = async e => {
@@ -86,13 +88,19 @@ const EditProfile = ({
           <div className="edit-profile-content">
             <div className="edit-profile-photo-group">
               <div className="edit-profile-photo my-1">
-                <img src={userPhoto ? userPhoto.url : defaultAvatar} alt="" />
+                <img src={photoURL ? photoURL : defaultAvatar} alt="" />
               </div>
               <div className="edit-profile-actions">
                 <label htmlFor="profile-photo-upload" className="btn btn-light">
                   Загрузить фото
                 </label>
-                <button className="btn btn-danger">Удалить фото</button>
+                <button
+                  className="btn btn-danger"
+                  type="button"
+                  onClick={deleteProfilePhoto}
+                >
+                  Удалить фото
+                </button>
               </div>
               <input
                 id="profile-photo-upload"
@@ -172,6 +180,7 @@ const EditProfile = ({
 EditProfile.propTypes = {
   getProfile: PropTypes.func.isRequired,
   uploadProfilePhoto: PropTypes.func.isRequired,
+  deleteProfilePhoto: PropTypes.func.isRequired,
   updateProfile: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired
 };
@@ -183,5 +192,6 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   getProfile,
   uploadProfilePhoto,
+  deleteProfilePhoto,
   updateProfile
 })(withRouter(EditProfile));

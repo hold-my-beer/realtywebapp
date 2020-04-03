@@ -19,10 +19,10 @@ const ProfileSchema = new mongoose.Schema({
     type: String
   },
   userPhoto: {
-    id: {
+    photoID: {
       type: String
     },
-    url: {
+    photoURL: {
       type: String
     }
   },

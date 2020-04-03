@@ -27,7 +27,9 @@ const Profile = ({ getProfile, profile: { profile, loading }, auth }) => {
               <div className="profile-photo">
                 <img
                   src={
-                    profile.userPhoto ? profile.userPhoto.url : defaultAvatar
+                    profile.userPhoto.photoURL
+                      ? profile.userPhoto.photoURL
+                      : defaultAvatar
                   }
                   alt=""
                 />
