@@ -1,0 +1,4 @@
+[0405/133449.298:ERROR:process_reader_win.cc(182)] ResumeThread: Параметр задан неверно. (0x57)
+[0405/133449.616:ERROR:process_memory_win.cc(73)] ReadMemory at 0x29197ff2a8 of 16 bytes failed: Запрос ReadProcessMemory или WriteProcessMemory был выполнен только частично. (0x12B)
+[0405/133449.616:ERROR:exception_snapshot_win.cc(195)] EXCEPTION_POINTERS read failed
+[0405/133449.833:ERROR:scoped_process_suspend.cc(40)] NtResumeProcess: Попытка доступа к процессу, выполняющему процедуру завершения. (0xc000010a)

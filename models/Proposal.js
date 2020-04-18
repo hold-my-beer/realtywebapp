@@ -5,16 +5,19 @@ const ProposalSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user'
   },
-  // proposalPhotos: [
-  //     {
-  //         url: {
-  //             type: String
-  //         }
-  //     }
-  // ],
-  proposalPhotos: {
-    type: [String]
-  },
+  proposalPhotos: [
+    {
+      photoID: {
+        type: String
+      },
+      photoURL: {
+        type: String
+      }
+    }
+  ],
+  // proposalPhotos: {
+  //   type: [String]
+  // },
   dealType: {
     type: String,
     required: true

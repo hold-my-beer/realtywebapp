@@ -7,6 +7,7 @@ import Login from '../auth/Login';
 import Register from '../auth/Register';
 import Profile from '../profile/Profile';
 import EditProfile from '../profile/EditProfile';
+import CreateProposal from '../proposal/CreateProposal';
 
 const Routes = () => {
   return (
@@ -17,6 +18,11 @@ const Routes = () => {
         <Route exact path="/register" component={Register} />
         <PrivateRoute exact path="/profile" component={Profile} />
         <PrivateRoute exact path="/edit-profile" component={EditProfile} />
+        <PrivateRoute
+          exact
+          path="/create-proposal"
+          component={CreateProposal}
+        />
       </Switch>
     </div>
   );

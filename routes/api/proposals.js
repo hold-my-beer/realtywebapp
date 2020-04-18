@@ -373,7 +373,7 @@ router.post(
       // check('proposalPhotos.*.url', 'Некорректный url фотографий объекта')
       //   // .if((value, { req }) => req.body.proposalPhotos)
       //   .isURL(),
-      check('proposalPhotos', 'Некорректный url фотографий объекта').isURL(),
+      // check('proposalPhotos', 'Некорректный url фотографий объекта').isURL(),
       check('dealType', 'Укажите корректный тип сделки').isIn([
         'Продаю',
         'Сдаю'
@@ -476,7 +476,11 @@ router.post(
 
     const proposal = new Proposal();
     proposal.user = req.user.id;
-    if (proposalPhotos) proposal.proposalPhotos = proposalPhotos;
+    if (proposalPhotos) {
+      proposal.proposalPhotos = proposalPhotos;
+    } else {
+      proposal.proposalPhotos = {};
+    }
     if (dealType) proposal.dealType = dealType;
     if (address) proposal.address = address;
     if (houseYear) proposal.houseYear = houseYear;
