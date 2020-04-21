@@ -33,7 +33,7 @@ export default function (state = initialState, action) {
         proposal: {
           ...state.proposal,
           proposalPhotos: state.proposal.proposalPhotos.filter(
-            (photo) => photo.photoID !== payload
+            photo => photo.photoID !== payload
           )
         },
         loading: false

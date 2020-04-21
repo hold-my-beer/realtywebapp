@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -14,7 +15,8 @@ const CreateProposal = ({
   addProposalPhotos,
   removeProposalPhoto,
   createProposal,
-  proposal: { proposal, loading }
+  proposal: { proposal, loading },
+  history
 }) => {
   const [formData, setFormData] = useState({
     dealType: 'Продажа',
@@ -37,17 +39,14 @@ const CreateProposal = ({
 
   const [files, setFiles] = useState([]);
 
-  // const [ymaps, setYmaps] = useState();
-
   const [mapData, setMapData] = useState({
     coordinates: [55.75, 37.57],
     zoom: 9
   });
 
   useEffect(() => {
-    // loadSuggest(ymaps);
     addProposalPhotos(files);
-  }, [addProposalPhotos, files /*, loadSuggest, ymaps*/]);
+  }, [addProposalPhotos, files]);
 
   const {
     dealType,
@@ -70,39 +69,21 @@ const CreateProposal = ({
 
   const { coordinates, zoom } = mapData;
 
-  const showObjectOnMap = (ymaps, selectedAddress) => {
-    ymaps.geocode(selectedAddress, { results: 1 }).then(res => {
-      setMapData({
-        ...mapData,
-        coordinates: res.geoObjects.get(0).geometry._coordinates,
-        zoom: 17
-      });
-    });
-  };
-
   const onLoad = ymaps => {
     const suggestView = new ymaps.SuggestView('address');
 
     suggestView.events.add('select', e => {
       const selectedAddress = e.get('item').value;
       setFormData({ ...formData, address: selectedAddress });
-      showObjectOnMap(ymaps, selectedAddress);
+
+      ymaps.geocode(selectedAddress, { results: 1 }).then(res => {
+        setMapData({
+          ...mapData,
+          coordinates: res.geoObjects.get(0).geometry._coordinates,
+          zoom: 17
+        });
+      });
     });
-
-    // const searchIcon = document.getElementById('address-search-icon');
-    // searchIcon.addEventListener('click', e => {
-    //   const selectedAddress =
-    //     e.target.parentElement.parentElement.previousElementSibling.value;
-    //   showObjectOnMap(ymaps, selectedAddress);
-    // });
-
-    // const addressInput = document.getElementById('address');
-    // addressInput.addEventListener('keydown', e => {
-    //   if (e.key === 'Enter') {
-    //     const selectedAddress = e.target.value;
-    //     showObjectOnMap(ymaps, selectedAddress);
-    //   }
-    // });
   };
 
   const onChange = e => {
@@ -132,7 +113,7 @@ const CreateProposal = ({
   const onSubmit = async e => {
     e.preventDefault();
 
-    createProposal(formData);
+    createProposal(formData, files, history);
   };
 
   return (
@@ -431,7 +412,7 @@ const CreateProposal = ({
               type="submit"
               className="btn btn-primary btn-block"
               value="Создать предложение"
-              onSubmit={e => onSubmit(e)}
+              onClick={e => onSubmit(e)}
             />
             {/* </form> */}
           </div>
@@ -456,4 +437,4 @@ export default connect(mapStateToProps, {
   addProposalPhotos,
   removeProposalPhoto,
   createProposal
-})(CreateProposal);
+})(withRouter(CreateProposal));

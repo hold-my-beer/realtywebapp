@@ -12,22 +12,29 @@ import { setAlert } from './alert';
 // Get proposal
 
 // Create proposal
-export const createProposal = formData => async dispatch => {
+export const createProposal = (formData, files, history) => async dispatch => {
   dispatch(setProposalLoading());
 
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
   try {
-    const res = await axios.post('/api/proposals', formData, config);
+    let proposalPhotos = await uploadProposalPhotos(files);
+
+    let dataToPost = formData;
+    dataToPost.proposalPhotos = proposalPhotos;
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+    const res = await axios.post('/api/proposals', dataToPost, config);
 
     dispatch({
       type: GET_PROPOSAL,
       payload: res.data
     });
+
+    history.push('/proposal');
   } catch (err) {
     const errors = err.response.data.errors;
 
@@ -42,68 +49,46 @@ export const createProposal = formData => async dispatch => {
 };
 
 // Upload proposal photos
-// export const uploadProposalPhotos = files => async dispatch => {
-//   if (files.length > 10) {
-//     dispatch(setAlert('Возможно загрузить не более 10 фотографий', 'danger'));
-//   }
+export const uploadProposalPhotos = async files => {
+  let proposalPhotos = [];
 
-//   dispatch(setProposalLoading());
+  const url = 'https://api.cloudinary.com/v1_1/dax1o7jk6/image/upload';
+  const preset = 'yxjpaicn';
 
-//   let proposalPhotos = [];
+  try {
+    // need "for" loop for async, "forEach" won't work - it's sync
+    for (const file of files) {
+      // default x-auth-token header not allowed by cloudinary
+      const instance = axios.create();
+      delete instance.defaults.headers.common['x-auth-token'];
 
-//   const url = 'https://api.cloudinary.com/v1_1/dax1o7jk6/image/upload';
-//   const preset = 'yxjpaicn';
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', preset);
 
-//   try {
-//     files.forEach(file => {
-//       // default x-auth-token header not allowed by cloudinary
-//       const instance = axios.create();
-//       delete instance.defaults.headers.common['x-auth-token'];
+      let res = await instance.post(url, formData);
+      const { public_id, secure_url } = res.data;
 
-//       const formData = new FormData();
-//       formData.append('file', file);
-//       formData.append('upload_preset', preset);
+      const proposalPhoto = {
+        photoID: public_id,
+        photoURL: secure_url
+      };
 
-//       const res = instance.post(url, formData);
-//       const { public_id, secure_url } = res.data;
+      proposalPhotos.push(proposalPhoto);
+    }
+  } catch (err) {
+    console.error(err);
+  }
 
-//       const proposalPhoto = {
-//         photoID: public_id,
-//         photoURL: secure_url
-//       };
-
-//       proposalPhotos.push(proposalPhoto);
-//     });
-
-//     const config = {
-//       headers: {
-//         'Content-Type': 'application/json'
-//       }
-//     };
-
-//     const body = JSON.stringify({ proposalPhotos });
-
-//     const res = await axios.post('/api/proposals', body, config);
-
-//     dispatch({
-//       type: GET_PROPOSAL,
-//       payload: res.data
-//     });
-//   } catch (err) {
-//     const errors = err.response.data.errors;
-
-//     if (errors) {
-//       errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-//     }
-
-//     dispatch({
-//       type: PROPOSAL_ERROR
-//     });
-//   }
-// };
+  return proposalPhotos;
+};
 
 // Add proposal photos
 export const addProposalPhotos = files => dispatch => {
+  if (files.length > 10) {
+    dispatch(setAlert('Возможно загрузить не более 10 фотографий', 'danger'));
+  }
+
   const proposalPhotos = [];
 
   files.forEach(file => {

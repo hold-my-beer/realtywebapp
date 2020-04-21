@@ -375,12 +375,10 @@ router.post(
       //   .isURL(),
       // check('proposalPhotos', 'Некорректный url фотографий объекта').isURL(),
       check('dealType', 'Укажите корректный тип сделки').isIn([
-        'Продаю',
-        'Сдаю'
+        'Продажа',
+        'Аренда'
       ]),
-      check('address', 'Укажите адрес дома')
-        .not()
-        .isEmpty(),
+      check('address', 'Укажите адрес дома').not().isEmpty(),
       check('houseYear', 'Укажите корректный год постройки дома').isInt({
         min: 1900,
         max: new Date().getFullYear()
@@ -523,12 +521,10 @@ router.put(
       //   .isURL(),
       check('proposalPhotos', 'Некорректный url фотографий объекта').isURL(),
       check('dealType', 'Укажите корректный тип сделки').isIn([
-        'Продаю',
-        'Сдаю'
+        'Продажа',
+        'Аренда'
       ]),
-      check('address', 'Укажите адрес дома')
-        .not()
-        .isEmpty(),
+      check('address', 'Укажите адрес дома').not().isEmpty(),
       check('houseYear', 'Укажите корректный год постройки дома').isInt({
         min: 1900,
         max: new Date().getFullYear()
