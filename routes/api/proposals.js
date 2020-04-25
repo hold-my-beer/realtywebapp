@@ -19,6 +19,34 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET api/proposals/mine
+// @desc    Get current user proposals
+// @access  Private
+router.get('/mine', auth, async (req, res) => {
+  try {
+    const proposals = await Proposal.find({ user: req.user.id }).sort({
+      date: -1
+    });
+
+    if (!proposals) {
+      return res.status(404).json({
+        msg: 'У вас нет сохраненных предложений по объектам недвижимости'
+      });
+    }
+
+    return res.json(proposals);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({
+        msg: 'У вас нет сохраненных предложений по объектам недвижимости'
+      });
+    }
+
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
+
 // @route   GET api/proposals/:dealType/:address/:houseYearFrom/:houseYearTo/:panel/:block/:brick/:monolithic/:floorsFrom/:floorsTo/:elevator/:floorFrom/:floorTo/:floorExceptLast/:roomsNumberFrom/:roomsNumberTo/:totalAreaFrom/:totalAreaTo/:livingAreaFrom/:livingAreaTo/:kitchenAreaFrom/:kitchenAreaTo/:balcony/:windows/:cooker/:bathRoom/:priceFrom/:priceTo
 // @desc    Get proposal by search criteria
 // @access  Public
@@ -480,7 +508,11 @@ router.post(
       proposal.proposalPhotos = {};
     }
     if (dealType) proposal.dealType = dealType;
-    if (address) proposal.address = address;
+    if (address) {
+      // exclude country from address
+      const index = address.indexOf(',') + 2;
+      proposal.address = address.substring(index);
+    }
     if (houseYear) proposal.houseYear = houseYear;
     if (houseType) proposal.houseType = houseType;
     if (floors) proposal.floors = floors;
@@ -633,7 +665,11 @@ router.put(
 
       if (proposalPhotos) proposal.proposalPhotos = proposalPhotos;
       if (dealType) proposal.dealType = dealType;
-      if (address) proposal.address = address;
+      if (address) {
+        // exclude country from address
+        const index = address.indexOf(',') + 2;
+        proposal.address = address.substring(index);
+      }
       if (houseYear) proposal.houseYear = houseYear;
       if (houseType) proposal.houseType = houseType;
       if (floors) proposal.floors = floors;

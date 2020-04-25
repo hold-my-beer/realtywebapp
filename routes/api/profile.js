@@ -55,14 +55,7 @@ router.get('/:userId', async (req, res) => {
 // @access  Private
 router.post(
   '/',
-  [
-    auth,
-    [
-      check('firstName', 'Пожалуйста, укажите ваше имя')
-        .not()
-        .isEmpty()
-    ]
-  ],
+  [auth, [check('firstName', 'Пожалуйста, укажите ваше имя').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -117,7 +110,22 @@ router.post('/photo', auth, async (req, res) => {
       return res.status(404).json({ msg: 'Профиль не найден' });
     }
 
-    if (userPhoto) profile.userPhoto = userPhoto;
+    if (userPhoto) {
+      if (profile.userPhoto.photoID !== '') {
+        const public_id = profile.userPhoto.photoID;
+
+        cloudinary.config({
+          cloud_name: config.get('cloudinary_cloud_name'),
+          api_key: config.get('cloudinary_api_key'),
+          api_secret: config.get('cloudinary_api_secret')
+        });
+
+        await cloudinary.v2.uploader.destroy(public_id, {
+          invalidate: true
+        });
+      }
+      profile.userPhoto = userPhoto;
+    }
 
     await profile.save();
     return res.json(profile);

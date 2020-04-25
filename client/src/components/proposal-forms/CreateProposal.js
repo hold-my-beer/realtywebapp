@@ -110,6 +110,14 @@ const CreateProposal = ({
     }
   };
 
+  const onDeletePhotoClick = id => {
+    const removeIndex = proposal.proposalPhotos
+      .map(photo => photo.photoID)
+      .indexOf(id);
+    files.splice(removeIndex, 1);
+    removeProposalPhoto(id);
+  };
+
   const onSubmit = async e => {
     e.preventDefault();
 
@@ -124,8 +132,6 @@ const CreateProposal = ({
         <Fragment>
           <h1 className="text-primary my-1">Создание предложения</h1>
           <p className="lead">Создайте предложение по объекту недвижимости</p>
-
-          {/* <form onSubmit={e => onSubmit(e)}> */}
           <div>
             <div className="form-group deal-type">
               <label htmlFor="dealType">Продаю / Сдаю</label>
@@ -142,7 +148,6 @@ const CreateProposal = ({
             </div>
             <div className="form-group">
               <label htmlFor="address">Выберите адрес дома</label>
-              {/* <div className="address-input-group"> */}
               <input
                 type="text"
                 id="address"
@@ -151,19 +156,6 @@ const CreateProposal = ({
                 placeholder="Начните набирать адрес..."
                 onChange={e => onChange(e)}
               />
-              {/* <div className="input-icons"> */}
-              {/* <div className="search-icon">
-                    <i
-                      className="fas fa-search"
-                      id="address-search-icon"
-                      // onClick={ymaps => loadSuggest(ymaps)}
-                    ></i>
-                  </div> */}
-              {/* <div className="clear-icon">
-                  <i className="fas fa-times"></i>
-                </div> */}
-              {/* </div> */}
-              {/* </div> */}
               <YMaps
                 query={{
                   apikey: 'c5dd7fd1-79ed-417f-898a-81cf2b2a7bc0'
@@ -176,10 +168,6 @@ const CreateProposal = ({
                   }}
                   className="map"
                   onLoad={ymaps => onLoad(ymaps)}
-                  // onLoad={e => {
-                  //   setYmaps(e);
-                  //   // loadSuggest();
-                  // }}
                   modules={['SuggestView', 'geocode']}
                 >
                   <GeoObject
@@ -391,7 +379,8 @@ const CreateProposal = ({
                     />
                     <i
                       className="far fa-times-circle fa-2x"
-                      onClick={() => removeProposalPhoto(photo.photoID)}
+                      // onClick={() => removeProposalPhoto(photo.photoID)}
+                      onClick={() => onDeletePhotoClick(photo.photoID)}
                     ></i>
                   </div>
                 ))}
@@ -414,7 +403,6 @@ const CreateProposal = ({
               value="Создать предложение"
               onClick={e => onSubmit(e)}
             />
-            {/* </form> */}
           </div>
         </Fragment>
       )}

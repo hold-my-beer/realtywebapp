@@ -71,7 +71,7 @@ const Profile = ({ getProfile, profile: { profile, loading }, auth }) => {
               <Link to="/create-proposal" className="btn btn-primary btn-block">
                 Создать предложение
               </Link>
-              <Link to="/proposals" className="btn btn-dark btn-block">
+              <Link to="/my-proposals" className="btn btn-dark btn-block">
                 Мои предложения
               </Link>
               <Link to="#" className="btn btn-dark btn-block">

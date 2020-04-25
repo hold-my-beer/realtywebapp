@@ -2,6 +2,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import {
   GET_PROPOSAL,
+  GET_PROPOSALS,
   UPLOAD_PROPOSAL_PHOTOS,
   PROPOSAL_ERROR,
   SET_PROPOSAL_LOADING,
@@ -9,7 +10,53 @@ import {
 } from './types';
 import { setAlert } from './alert';
 
-// Get proposal
+// Get current user proposals
+export const getCurrentUserProposals = () => async dispatch => {
+  dispatch(setProposalLoading());
+
+  try {
+    const res = await axios.get('/api/proposals/mine');
+
+    dispatch({
+      type: GET_PROPOSALS,
+      payload: res.data
+    });
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: PROPOSAL_ERROR
+    });
+  }
+};
+
+// Get proposal by id
+export const getProposalById = id => async dispatch => {
+  dispatch(setProposalLoading());
+
+  try {
+    const res = await axios.get(`/api/proposals/${id}`);
+
+    dispatch({
+      type: GET_PROPOSAL,
+      payload: res.data
+    });
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: PROPOSAL_ERROR
+    });
+  }
+};
 
 // Create proposal
 export const createProposal = (formData, files, history) => async dispatch => {
@@ -34,7 +81,7 @@ export const createProposal = (formData, files, history) => async dispatch => {
       payload: res.data
     });
 
-    history.push('/proposal');
+    history.push('/my-proposals');
   } catch (err) {
     const errors = err.response.data.errors;
 

@@ -1,5 +1,6 @@
 import {
   GET_PROPOSAL,
+  GET_PROPOSALS,
   UPLOAD_PROPOSAL_PHOTOS,
   REMOVE_PROPOSAL_PHOTOS,
   PROPOSAL_ERROR,
@@ -8,6 +9,7 @@ import {
 
 const initialState = {
   proposal: null,
+  proposals: [],
   loading: false
 };
 
@@ -19,6 +21,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         proposal: payload,
+        loading: false
+      };
+    case GET_PROPOSALS:
+      return {
+        ...state,
+        proposals: payload,
         loading: false
       };
     case UPLOAD_PROPOSAL_PHOTOS:
