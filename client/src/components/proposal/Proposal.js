@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getProposalById } from '../../actions/proposal';
+import { getProposalById, deleteProposal } from '../../actions/proposal';
 
 import Spinner from '../layout/Spinner';
 import NumberFormat from 'react-number-format';
@@ -10,9 +10,11 @@ import { YMaps, Map, GeoObject } from 'react-yandex-maps';
 
 const Proposal = ({
   getProposalById,
+  deleteProposal,
   proposal: { proposal, loading },
   auth,
-  match
+  match,
+  history
 }) => {
   const [mapData, setMapData] = useState({
     coordinates: [55.75, 37.57],
@@ -173,7 +175,10 @@ const Proposal = ({
               >
                 Редактировать предложение
               </Link>
-              <button className="btn btn-danger btn-block">
+              <button
+                className="btn btn-danger btn-block"
+                onClick={() => deleteProposal(proposal._id, history)}
+              >
                 Удалить предложение
               </button>
             </Fragment>
@@ -197,6 +202,7 @@ const Proposal = ({
 
 Proposal.propTypes = {
   getProposalById: PropTypes.func.isRequired,
+  deleteProposal: PropTypes.func.isRequired,
   proposal: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
 };
@@ -206,4 +212,6 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getProposalById })(Proposal);
+export default connect(mapStateToProps, { getProposalById, deleteProposal })(
+  withRouter(Proposal)
+);

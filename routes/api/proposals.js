@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
+const cloudinary = require('cloudinary');
+const config = require('config');
 
 const Proposal = require('../../models/Proposal');
 
@@ -551,7 +553,7 @@ router.put(
       // check('proposalPhotos.*.url', 'Некорректный url фотографий объекта')
       //   // .if((value, { req }) => req.body.proposalPhotos)
       //   .isURL(),
-      check('proposalPhotos', 'Некорректный url фотографий объекта').isURL(),
+      // check('proposalPhotos', 'Некорректный url фотографий объекта').isURL(),
       check('dealType', 'Укажите корректный тип сделки').isIn([
         'Продажа',
         'Аренда'
@@ -631,7 +633,8 @@ router.put(
     }
 
     const {
-      proposalPhotos,
+      photosToAdd,
+      photosToDestroy,
       dealType,
       address,
       houseYear,
@@ -663,12 +666,39 @@ router.put(
         });
       }
 
-      if (proposalPhotos) proposal.proposalPhotos = proposalPhotos;
+      if (photosToDestroy.length > 0) {
+        cloudinary.config({
+          cloud_name: config.get('cloudinary_cloud_name'),
+          api_key: config.get('cloudinary_api_key'),
+          api_secret: config.get('cloudinary_api_secret')
+        });
+
+        await cloudinary.v2.api.delete_resources(photosToDestroy, {
+          invalidate: true
+        });
+
+        proposal.proposalPhotos = proposal.proposalPhotos.filter(photo => {
+          for (let i = 0; i < photosToDestroy.length; i++) {
+            if (photo.photoID === photosToDestroy[i]) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+      }
+
+      if (photosToAdd.length > 0) {
+        proposal.proposalPhotos = [...proposal.proposalPhotos, ...photosToAdd];
+      }
+
       if (dealType) proposal.dealType = dealType;
       if (address) {
         // exclude country from address
-        const index = address.indexOf(',') + 2;
-        proposal.address = address.substring(index);
+        if (address.indexOf('Россия') === 0) {
+          const index = address.indexOf(',') + 2;
+          proposal.address = address.substring(index);
+        }
       }
       if (houseYear) proposal.houseYear = houseYear;
       if (houseType) proposal.houseType = houseType;
@@ -714,6 +744,21 @@ router.delete('/:id', auth, async (req, res) => {
         msg: 'Пользователь не имеет прав на изменение запрашиваемого ресурса'
       });
     }
+
+    const photosToDestroy = [];
+    proposal.proposalPhotos.forEach(photo => {
+      photosToDestroy.push(photo.photoID);
+    });
+
+    cloudinary.config({
+      cloud_name: config.get('cloudinary_cloud_name'),
+      api_key: config.get('cloudinary_api_key'),
+      api_secret: config.get('cloudinary_api_secret')
+    });
+
+    await cloudinary.v2.api.delete_resources(photosToDestroy, {
+      invalidate: true
+    });
 
     await proposal.remove();
 

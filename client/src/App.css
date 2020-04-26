@@ -741,6 +741,11 @@ input[type='file'] {
     margin: auto;
   }
 
+  /* Create Proposal Page */
+  .create-proposal-photos {
+    justify-content: flex-start;
+  }
+
   /* Proposal Page */
   .proposal-photos {
     justify-content: flex-start;
