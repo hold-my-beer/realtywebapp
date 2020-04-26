@@ -742,7 +742,9 @@ input[type='file'] {
   }
 
   /* Proposal Page */
-
+  .proposal-photos {
+    justify-content: flex-start;
+  }
   .parameters {
     max-width: 450px;
     margin: auto;

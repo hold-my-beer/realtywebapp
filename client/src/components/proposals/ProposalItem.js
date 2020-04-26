@@ -35,7 +35,7 @@ const ProposalItem = ({
           />{' '}
           руб.
         </h3>
-        <Link to="./proposal.html" className="btn btn-block btn-primary">
+        <Link to={`/proposals/${_id}`} className="btn btn-block btn-primary">
           Перейти к предложению
         </Link>
       </div>
