@@ -4,6 +4,7 @@ import {
   UPLOAD_PROPOSAL_PHOTOS,
   REMOVE_PROPOSAL_PHOTOS,
   DELETE_PROPOSAL,
+  CLEAR_PROPOSAL,
   PROPOSAL_ERROR,
   SET_PROPOSAL_LOADING
 } from '../actions/types';
@@ -35,7 +36,10 @@ export default function (state = initialState, action) {
         ...state,
         proposal: {
           ...state.proposal,
-          proposalPhotos: [...state.proposal.proposalPhotos, ...payload]
+          proposalPhotos:
+            state.proposal === null
+              ? payload
+              : [...state.proposal.proposalPhotos, ...payload]
         },
         loading: false
       };
@@ -56,10 +60,12 @@ export default function (state = initialState, action) {
         proposal: null,
         loading: false
       };
+    case CLEAR_PROPOSAL:
     case PROPOSAL_ERROR:
       return {
         ...state,
         proposal: null,
+        proposals: [],
         loading: false
       };
     case SET_PROPOSAL_LOADING:

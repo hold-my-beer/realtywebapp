@@ -130,6 +130,9 @@ const CreateProposal = ({
         <Spinner />
       ) : (
         <Fragment>
+          <button className="btn btn-light" onClick={history.goBack}>
+            Назад
+          </button>
           <h1 className="text-primary my-1">Создание предложения</h1>
           <p className="lead">Создайте предложение по объекту недвижимости</p>
           <div>

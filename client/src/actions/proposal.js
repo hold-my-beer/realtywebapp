@@ -10,6 +10,7 @@ import {
   DELETE_PROPOSAL
 } from './types';
 import { setAlert } from './alert';
+import { CLOUDINARY_URL, CLOUDINARY_PRESET } from './consts';
 
 // Get current user proposals
 export const getCurrentUserProposals = () => async dispatch => {
@@ -100,9 +101,6 @@ export const createProposal = (formData, files, history) => async dispatch => {
 export const uploadProposalPhotos = async files => {
   let proposalPhotos = [];
 
-  const url = 'https://api.cloudinary.com/v1_1/dax1o7jk6/image/upload';
-  const preset = 'yxjpaicn';
-
   try {
     // need "for" loop for async, "forEach" won't work - it's sync
     for (const file of files) {
@@ -112,9 +110,9 @@ export const uploadProposalPhotos = async files => {
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', preset);
+      formData.append('upload_preset', CLOUDINARY_PRESET);
 
-      let res = await instance.post(url, formData);
+      let res = await instance.post(CLOUDINARY_URL, formData);
       const { public_id, secure_url } = res.data;
 
       const proposalPhoto = {

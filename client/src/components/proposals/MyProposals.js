@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getCurrentUserProposals } from '../../actions/proposal';
@@ -8,7 +9,8 @@ import ProposalItem from './ProposalItem';
 
 const MyProposals = ({
   getCurrentUserProposals,
-  proposal: { proposals, loading }
+  proposal: { proposals, loading },
+  history
 }) => {
   useEffect(() => {
     getCurrentUserProposals();
@@ -20,6 +22,9 @@ const MyProposals = ({
         <Spinner />
       ) : (
         <Fragment>
+          <button className="btn btn-light" onClick={history.goBack}>
+            Назад
+          </button>
           <h1 className="text-primary my-1">Мои предложения</h1>
           {proposals.length === 0 ? (
             <p className="lead">У вас нет созданных предложений</p>
@@ -49,5 +54,5 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps, { getCurrentUserProposals })(
-  MyProposals
+  withRouter(MyProposals)
 );

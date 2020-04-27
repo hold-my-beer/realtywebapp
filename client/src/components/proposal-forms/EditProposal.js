@@ -190,6 +190,9 @@ const EditProposal = ({
         <Spinner />
       ) : (
         <Fragment>
+          <button className="btn btn-light" onClick={history.goBack}>
+            Назад
+          </button>
           <h1 className="text-primary my-1">Редактирование предложения</h1>
           <p className="lead">Отредактируйте ваше предложение</p>
           <div>

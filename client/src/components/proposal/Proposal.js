@@ -43,6 +43,9 @@ const Proposal = ({
         <Spinner />
       ) : (
         <Fragment>
+          <button className="btn btn-light" onClick={history.goBack}>
+            Назад
+          </button>
           <h1 className="text-primary my-1">
             {proposal.dealType === 'Продажа' ? (
               <span>Продается</span>

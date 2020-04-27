@@ -1,5 +1,6 @@
 import {
   GET_PROFILE,
+  CLEAR_PROFILE,
   PROFILE_ERROR,
   SET_PROFILE_LOADING
 } from '../actions/types';
@@ -9,7 +10,7 @@ const initialState = {
   loading: false
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -19,6 +20,7 @@ export default function(state = initialState, action) {
         profile: payload,
         loading: false
       };
+    case CLEAR_PROFILE:
     case PROFILE_ERROR:
       return {
         ...state,

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { GET_PROFILE, PROFILE_ERROR, SET_PROFILE_LOADING } from './types';
 import { setAlert } from './alert';
+import { CLOUDINARY_URL, CLOUDINARY_PRESET } from './consts';
 
 // Get profile
 export const getProfile = () => async dispatch => {
@@ -30,19 +31,16 @@ export const getProfile = () => async dispatch => {
 export const uploadProfilePhoto = file => async dispatch => {
   dispatch(setProfileLoading());
 
-  const url = 'https://api.cloudinary.com/v1_1/dax1o7jk6/image/upload';
-  const preset = 'yxjpaicn';
-
   // default x-auth-token header not allowed by cloudinary
   const instance = axios.create();
   delete instance.defaults.headers.common['x-auth-token'];
 
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', preset);
+  formData.append('upload_preset', CLOUDINARY_PRESET);
 
   try {
-    let res = await instance.post(url, formData);
+    let res = await instance.post(CLOUDINARY_URL, formData);
     const { public_id, secure_url } = res.data;
 
     const userPhoto = {
