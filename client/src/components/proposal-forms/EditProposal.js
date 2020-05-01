@@ -2,20 +2,13 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  getProposalById,
-  addProposalPhotos,
-  removeProposalPhoto,
-  updateProposal
-} from '../../actions/proposal';
-
-import Spinner from '../layout/Spinner';
+import { getProposalById, updateProposal } from '../../actions/proposal';
+import { v4 as uuidv4 } from 'uuid';
 import { YMaps, Map, GeoObject } from 'react-yandex-maps';
+import Spinner from '../layout/Spinner';
 
 const EditProposal = ({
   getProposalById,
-  addProposalPhotos,
-  removeProposalPhoto,
   updateProposal,
   proposal: { proposal, loading },
   match,
@@ -42,6 +35,8 @@ const EditProposal = ({
 
   const [files, setFiles] = useState([]);
 
+  const [previews, setPreviews] = useState([]);
+
   const [photosToDestroy, setPhotosToDestroy] = useState([]);
 
   const [mapData, setMapData] = useState({
@@ -53,22 +48,31 @@ const EditProposal = ({
     getProposalById(match.params.id);
 
     setFormData({
-      dealType: loading || !proposal.dealType ? '' : proposal.dealType,
-      address: loading || !proposal.address ? '' : proposal.address,
-      houseYear: loading || !proposal.houseYear ? '' : proposal.houseYear,
-      houseType: loading || !proposal.houseType ? '' : proposal.houseType,
-      floors: loading || !proposal.floors ? '' : proposal.floors,
-      elevator: loading || !proposal.elevator ? '' : proposal.elevator,
-      floor: loading || !proposal.floor ? '' : proposal.floor,
-      roomsNumber: loading || !proposal.roomsNumber ? '' : proposal.roomsNumber,
-      totalArea: loading || !proposal.totalArea ? '' : proposal.totalArea,
-      livingArea: loading || !proposal.livingArea ? '' : proposal.livingArea,
-      kitchenArea: loading || !proposal.kitchenArea ? '' : proposal.kitchenArea,
-      balcony: loading || !proposal.balcony ? '' : proposal.balcony,
-      windows: loading || !proposal.windows ? '' : proposal.windows,
-      cooker: loading || !proposal.cooker ? '' : proposal.cooker,
-      bathroom: loading || !proposal.bathroom ? '' : proposal.bathroom,
-      price: loading || !proposal.price ? '' : proposal.price
+      dealType:
+        proposal === null || !proposal.dealType ? '' : proposal.dealType,
+      address: proposal === null || !proposal.address ? '' : proposal.address,
+      houseYear:
+        proposal === null || !proposal.houseYear ? '' : proposal.houseYear,
+      houseType:
+        proposal === null || !proposal.houseType ? '' : proposal.houseType,
+      floors: proposal === null || !proposal.floors ? '' : proposal.floors,
+      elevator:
+        proposal === null || !proposal.elevator ? '' : proposal.elevator,
+      floor: proposal === null || !proposal.floor ? '' : proposal.floor,
+      roomsNumber:
+        proposal === null || !proposal.roomsNumber ? '' : proposal.roomsNumber,
+      totalArea:
+        proposal === null || !proposal.totalArea ? '' : proposal.totalArea,
+      livingArea:
+        proposal === null || !proposal.livingArea ? '' : proposal.livingArea,
+      kitchenArea:
+        proposal === null || !proposal.kitchenArea ? '' : proposal.kitchenArea,
+      balcony: proposal === null || !proposal.balcony ? '' : proposal.balcony,
+      windows: proposal === null || !proposal.windows ? '' : proposal.windows,
+      cooker: proposal === null || !proposal.cooker ? '' : proposal.cooker,
+      bathroom:
+        proposal === null || !proposal.bathroom ? '' : proposal.bathroom,
+      price: proposal === null || !proposal.price ? '' : proposal.price
     });
   }, [
     getProposalById,
@@ -92,8 +96,8 @@ const EditProposal = ({
   ]);
 
   useEffect(() => {
-    addProposalPhotos(files);
-  }, [addProposalPhotos, files]);
+    setPreviews(proposal === null ? [] : proposal.proposalPhotos);
+  }, []);
 
   const {
     dealType,
@@ -156,26 +160,43 @@ const EditProposal = ({
       return true;
     });
 
+    const previewsToAdd = [];
+    filesToAdd.forEach(file => {
+      const id = uuidv4();
+      const url = URL.createObjectURL(file);
+
+      const preview = {
+        photoID: id,
+        photoURL: url,
+        fileName: file.name
+      };
+
+      previewsToAdd.push(preview);
+    });
+
     setFiles([...files, ...filesToAdd]);
+
+    setPreviews([...previews, ...previewsToAdd]);
   };
 
-  const onImageLoad = photo => {
-    if (photo.photoURL.startsWith('blob')) {
-      URL.revokeObjectURL(photo.photoURL);
+  const onImageLoad = preview => {
+    if (preview.photoURL.startsWith('blob')) {
+      URL.revokeObjectURL(preview.photoURL);
     }
   };
 
-  const onDeletePhotoClick = photoToDelete => {
-    if (photoToDelete.photoURL.startsWith('blob')) {
-      const removeIndex = proposal.proposalPhotos
-        .map(photo => photo.photoID)
-        .indexOf(photoToDelete.photoID);
-      files.splice(removeIndex, 1);
+  const onDeletePhotoClick = previewToDelete => {
+    if (previewToDelete.photoURL.startsWith('blob')) {
+      setFiles([
+        ...files.filter(file => file.name !== previewToDelete.fileName)
+      ]);
     } else {
-      setPhotosToDestroy([...photosToDestroy, photoToDelete.photoID]);
+      setPhotosToDestroy([...photosToDestroy, previewToDelete.photoID]);
     }
 
-    removeProposalPhoto(photoToDelete.photoID);
+    setPreviews([
+      ...previews.filter(preview => preview.photoID !== previewToDelete.photoID)
+    ]);
   };
 
   const onSubmit = async e => {
@@ -432,21 +453,19 @@ const EditProposal = ({
               <div className="empty"></div>
             </div>
             <div className="create-proposal-photos">
-              {proposal &&
-                proposal.proposalPhotos.map(photo => (
-                  <div key={photo.photoID} className="create-proposal-photo">
-                    <img
-                      src={photo.photoURL}
-                      alt=""
-                      onLoad={() => onImageLoad(photo)}
-                    />
-                    <i
-                      className="far fa-times-circle fa-2x"
-                      // onClick={() => removeProposalPhoto(photo.photoID)}
-                      onClick={() => onDeletePhotoClick(photo)}
-                    ></i>
-                  </div>
-                ))}
+              {previews.map(preview => (
+                <div key={preview.photoID} className="create-proposal-photo">
+                  <img
+                    src={preview.photoURL}
+                    alt=""
+                    onLoad={() => onImageLoad(preview)}
+                  />
+                  <i
+                    className="far fa-times-circle fa-2x"
+                    onClick={() => onDeletePhotoClick(preview)}
+                  ></i>
+                </div>
+              ))}
             </div>
             <label
               htmlFor="proposal-photos-upload"
@@ -475,8 +494,6 @@ const EditProposal = ({
 
 EditProposal.propTypes = {
   getProposalById: PropTypes.func.isRequired,
-  addProposalPhotos: PropTypes.func.isRequired,
-  removeProposalPhoto: PropTypes.func.isRequired,
   updateProposal: PropTypes.func.isRequired,
   proposal: PropTypes.object.isRequired
 };
@@ -487,7 +504,5 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   getProposalById,
-  addProposalPhotos,
-  removeProposalPhoto,
   updateProposal
 })(withRouter(EditProposal));

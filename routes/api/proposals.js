@@ -431,7 +431,9 @@ router.post(
         .isInt({
           min: 1
         })
-        .custom((value, { req }) => value <= req.body.floors),
+        .custom(
+          (value, { req }) => parseInt(value) <= parseInt(req.body.floors)
+        ),
       check('roomsNumber', 'Укажите корректное количество комнат').isInt({
         min: 1
       }),

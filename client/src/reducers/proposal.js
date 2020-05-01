@@ -36,10 +36,10 @@ export default function (state = initialState, action) {
         ...state,
         proposal: {
           ...state.proposal,
-          proposalPhotos:
-            state.proposal === null
-              ? payload
-              : [...state.proposal.proposalPhotos, ...payload]
+          proposalPhotos: payload
+          // state.proposal === null
+          //   ? payload
+          //   : [...state.proposal.proposalPhotos, ...payload]
         },
         loading: false
       };
