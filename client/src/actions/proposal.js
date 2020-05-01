@@ -3,10 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   GET_PROPOSAL,
   GET_PROPOSALS,
-  UPLOAD_PROPOSAL_PHOTOS,
   PROPOSAL_ERROR,
   SET_PROPOSAL_LOADING,
-  REMOVE_PROPOSAL_PHOTOS,
   DELETE_PROPOSAL
 } from './types';
 import { setAlert } from './alert';
@@ -127,42 +125,6 @@ export const uploadProposalPhotos = async files => {
   }
 
   return proposalPhotos;
-};
-
-// Add proposal photos
-export const addProposalPhotos = files => dispatch => {
-  if (files.length > 10) {
-    dispatch(setAlert('Возможно загрузить не более 10 фотографий', 'danger'));
-  }
-
-  const proposalPhotos = [];
-
-  files.forEach(file => {
-    const id = uuidv4();
-    const url = URL.createObjectURL(file);
-
-    const proposalPhoto = {
-      photoID: id,
-      photoURL: url
-    };
-
-    proposalPhotos.push(proposalPhoto);
-  });
-
-  dispatch({
-    type: UPLOAD_PROPOSAL_PHOTOS,
-    payload: proposalPhotos
-  });
-};
-
-// Remove proposal photo
-export const removeProposalPhoto = id => dispatch => {
-  dispatch(setProposalLoading());
-
-  dispatch({
-    type: REMOVE_PROPOSAL_PHOTOS,
-    payload: id
-  });
 };
 
 // Update proposal

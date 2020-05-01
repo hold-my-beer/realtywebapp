@@ -1,8 +1,6 @@
 import {
   GET_PROPOSAL,
   GET_PROPOSALS,
-  UPLOAD_PROPOSAL_PHOTOS,
-  REMOVE_PROPOSAL_PHOTOS,
   DELETE_PROPOSAL,
   CLEAR_PROPOSAL,
   PROPOSAL_ERROR,
@@ -29,29 +27,6 @@ export default function (state = initialState, action) {
       return {
         ...state,
         proposals: payload,
-        loading: false
-      };
-    case UPLOAD_PROPOSAL_PHOTOS:
-      return {
-        ...state,
-        proposal: {
-          ...state.proposal,
-          proposalPhotos: payload
-          // state.proposal === null
-          //   ? payload
-          //   : [...state.proposal.proposalPhotos, ...payload]
-        },
-        loading: false
-      };
-    case REMOVE_PROPOSAL_PHOTOS:
-      return {
-        ...state,
-        proposal: {
-          ...state.proposal,
-          proposalPhotos: state.proposal.proposalPhotos.filter(
-            photo => photo.photoID !== payload
-          )
-        },
         loading: false
       };
     case DELETE_PROPOSAL:
