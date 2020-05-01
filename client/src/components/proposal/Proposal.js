@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -6,7 +6,8 @@ import { getProposalById, deleteProposal } from '../../actions/proposal';
 
 import Spinner from '../layout/Spinner';
 import NumberFormat from 'react-number-format';
-import { YMaps, Map, GeoObject } from 'react-yandex-maps';
+
+import ProposalMap from './ProposalMap';
 
 const Proposal = ({
   getProposalById,
@@ -16,26 +17,9 @@ const Proposal = ({
   match,
   history
 }) => {
-  const [mapData, setMapData] = useState({
-    coordinates: [55.75, 37.57],
-    zoom: 9
-  });
-
   useEffect(() => {
     getProposalById(match.params.id);
   }, [getProposalById, match.params.id]);
-
-  const { coordinates, zoom } = mapData;
-
-  const onLoad = ymaps => {
-    ymaps.geocode(proposal.address, { results: 1 }).then(res => {
-      setMapData({
-        ...mapData,
-        coordinates: res.geoObjects.get(0).geometry._coordinates,
-        zoom: 16
-      });
-    });
-  };
 
   return (
     <Fragment>
@@ -70,31 +54,8 @@ const Proposal = ({
               </div>
             ))}
           </div>
-          <YMaps
-            query={{
-              apikey: 'c5dd7fd1-79ed-417f-898a-81cf2b2a7bc0'
-            }}
-          >
-            <Map
-              state={{
-                center: coordinates,
-                zoom: zoom
-              }}
-              className="map"
-              onLoad={ymaps => onLoad(ymaps)}
-              modules={['geocode']}
-            >
-              <GeoObject
-                geometry={{
-                  type: 'Point',
-                  coordinates: coordinates
-                }}
-                options={{
-                  preset: 'islands#blueHomeCircleIcon'
-                }}
-              />
-            </Map>
-          </YMaps>
+
+          <ProposalMap address={proposal.address} />
 
           <div className="parameters my-2">
             <div className="parameter-name">
@@ -157,17 +118,6 @@ const Proposal = ({
             <div className="parameter-value">{proposal.bathroom}</div>
           </div>
 
-          {/* <input
-            type="submit"
-            className="btn btn-primary btn-block"
-            value="Сохранить в понравившиеся"
-          />
-          <Link to="./profile.html" className="btn btn-dark btn-block">
-            Контакты продавца
-          </Link>
-          <button className="btn btn-danger btn-block">
-            Удалить предложение
-          </button> */}
           {auth !== null &&
           auth.isAuthenticated &&
           auth.user._id === proposal.user ? (

@@ -95,38 +95,6 @@ export const createProposal = (formData, files, history) => async dispatch => {
   }
 };
 
-// Upload proposal photos
-export const uploadProposalPhotos = async files => {
-  let proposalPhotos = [];
-
-  try {
-    // need "for" loop for async, "forEach" won't work - it's sync
-    for (const file of files) {
-      // default x-auth-token header not allowed by cloudinary
-      const instance = axios.create();
-      delete instance.defaults.headers.common['x-auth-token'];
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', CLOUDINARY_PRESET);
-
-      let res = await instance.post(CLOUDINARY_URL, formData);
-      const { public_id, secure_url } = res.data;
-
-      const proposalPhoto = {
-        photoID: public_id,
-        photoURL: secure_url
-      };
-
-      proposalPhotos.push(proposalPhoto);
-    }
-  } catch (err) {
-    console.error(err);
-  }
-
-  return proposalPhotos;
-};
-
 // Update proposal
 export const updateProposal = (
   id,
@@ -169,6 +137,38 @@ export const updateProposal = (
       type: PROPOSAL_ERROR
     });
   }
+};
+
+// Upload proposal photos
+export const uploadProposalPhotos = async files => {
+  let proposalPhotos = [];
+
+  try {
+    // need "for" loop for async, "forEach" won't work - it's sync
+    for (const file of files) {
+      // default x-auth-token header not allowed by cloudinary
+      const instance = axios.create();
+      delete instance.defaults.headers.common['x-auth-token'];
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', CLOUDINARY_PRESET);
+
+      let res = await instance.post(CLOUDINARY_URL, formData);
+      const { public_id, secure_url } = res.data;
+
+      const proposalPhoto = {
+        photoID: public_id,
+        photoURL: secure_url
+      };
+
+      proposalPhotos.push(proposalPhoto);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  return proposalPhotos;
 };
 
 // Delete proposal
