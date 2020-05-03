@@ -70,6 +70,85 @@ const CreateProposal = ({ createProposal, history }) => {
           zoom: 17
         });
       });
+      // ymaps.geocode(selectedAddress, { results: 1 }).then(res => {
+      //   setMapData({
+      //     ...mapData,
+      //     coordinates: res.geoObjects.get(0).geometry._coordinates,
+      //     zoom: 17
+      //   });
+
+      // console.log(res.geoObjects.get(0).getAddressLine());
+      // console.log(res.geoObjects.get(0).getAdministrativeAreas());
+      // console.log(res.geoObjects.get(0).getLocalities());
+      //console.log(res.geoObjects.get(0).getParent());
+      // console.log(res.geoObjects.get(0).getThoroughfare());
+      // console.log(res.geoObjects.get(0).getPremiseNumber());
+      // console.log(selectedAddress);
+
+      // ymaps
+      //   .geocode(res.geoObjects.get(0).geometry.getCoordinates(), {
+      //     results: 1,
+      //     json: true
+      //   })
+      //   .then(rest => {
+      // console.log(rest.geoObjects.get(0).properties.get('name'));
+      // console.log(rest.geoObjects.get(0).properties);
+      //     console.log('common');
+      //     console.log(rest);
+      //   });
+
+      // ymaps
+      //   .geocode(res.geoObjects.get(0).geometry.getCoordinates(), {
+      //     results: 1,
+      //     kind: 'street',
+      //     json: true
+      //   })
+      //   .then(rest => {
+      // console.log(rest.geoObjects.get(0).properties.get('name'));
+      // console.log(rest.geoObjects.get(0).properties);
+      //     console.log('street');
+      //     console.log(rest);
+      //   });
+
+      // ymaps
+      //   .geocode(res.geoObjects.get(0).geometry.getCoordinates(), {
+      //     results: 1,
+      //     kind: 'metro',
+      //     json: true
+      //   })
+      //   .then(rest => {
+      // console.log(rest.geoObjects.get(0).properties.get('name'));
+      // console.log(rest.geoObjects.get(0).properties);
+      //     console.log('metro');
+      //     console.log(rest);
+      //   });
+
+      // ymaps
+      //   .geocode(res.geoObjects.get(0).geometry.getCoordinates(), {
+      //     results: 1,
+      //     kind: 'district',
+      //     json: true
+      //   })
+      //   .then(rest => {
+      // console.log(rest.geoObjects.get(0).properties.get('name'));
+      // console.log(rest.geoObjects.get(0).properties);
+      //     console.log('district');
+      //     console.log(rest);
+      //   });
+
+      // ymaps
+      //   .geocode(res.geoObjects.get(0).geometry.getCoordinates(), {
+      //     results: 1,
+      //     kind: 'locality',
+      //     json: true
+      //   })
+      //   .then(rest => {
+      // console.log(rest.geoObjects.get(0).properties.get('name'));
+      // console.log(rest.geoObjects.get(0).properties);
+      //   console.log('locality');
+      //   console.log(rest);
+      // });
+      // });
     });
   };
 

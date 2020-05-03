@@ -508,9 +508,10 @@ router.post(
     proposal.user = req.user.id;
     if (proposalPhotos) {
       proposal.proposalPhotos = proposalPhotos;
-    } else {
-      proposal.proposalPhotos = {};
     }
+    // else {
+    //   proposal.proposalPhotos = {};
+    // }
     if (dealType) proposal.dealType = dealType;
     if (address) {
       // exclude country from address

@@ -642,6 +642,9 @@ input[type='file'] {
 }
 
 /* Search Page */
+.search-by {
+  width: 100%;
+}
 .search-parameters {
   display: grid;
   grid-template-columns: 1fr;
