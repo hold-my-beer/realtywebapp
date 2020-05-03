@@ -46,6 +46,11 @@ const Search = props => {
     searchName: ''
   });
 
+  const [addressData, setAddressData] = useState({
+    type: 'address',
+    address: ''
+  });
+
   const [toggleAny, setToggleAny] = useState({
     anyHouseYear: false,
     anyHouseType: false,
