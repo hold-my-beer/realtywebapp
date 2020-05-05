@@ -23,8 +23,70 @@ const ProposalSchema = new mongoose.Schema({
     required: true
   },
   address: {
-    type: String,
-    required: true
+    // type: String,
+    // required: true
+    coords: {
+      type: Array,
+      required: true
+    },
+    province: {
+      type: String,
+      required: true
+    },
+    locality: {
+      type: String,
+      required: true
+    },
+    street: {
+      type: String
+    },
+    house: {
+      type: String,
+      required: true
+    },
+    metro: {
+      type: String
+    },
+    route: {
+      type: String
+    },
+    metroDuration: {
+      auto: {
+        value: {
+          type: String
+        },
+        text: {
+          type: String
+        }
+      },
+      masstransit: {
+        value: {
+          type: String
+        },
+        text: {
+          type: String
+        }
+      },
+      pedestrian: {
+        value: {
+          type: String
+        },
+        text: {
+          type: String
+        }
+      }
+    },
+    district: {
+      type: String
+    },
+    addressLine: {
+      type: String,
+      required: true
+    },
+    shortAddressLine: {
+      type: String,
+      required: true
+    }
   },
   houseYear: {
     type: Number,

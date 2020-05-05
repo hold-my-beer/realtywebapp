@@ -58,14 +58,21 @@ export const getProposalById = id => async dispatch => {
 };
 
 // Create proposal
-export const createProposal = (formData, files, history) => async dispatch => {
+export const createProposal = (
+  formData,
+  address,
+  files,
+  history
+) => async dispatch => {
   dispatch(setProposalLoading());
 
   try {
+    let proposal = formData;
+    proposal.address = address;
+
     let proposalPhotos = await uploadProposalPhotos(files);
 
-    let dataToPost = formData;
-    dataToPost.proposalPhotos = proposalPhotos;
+    proposal.proposalPhotos = proposalPhotos;
 
     const config = {
       headers: {
@@ -73,7 +80,7 @@ export const createProposal = (formData, files, history) => async dispatch => {
       }
     };
 
-    const res = await axios.post('/api/proposals', dataToPost, config);
+    const res = await axios.post('/api/proposals', proposal, config);
 
     dispatch({
       type: GET_PROPOSAL,
