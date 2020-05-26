@@ -16,7 +16,7 @@ const EditProposal = ({
 }) => {
   const [formData, setFormData] = useState({
     dealType: 'Продажа',
-    address: '',
+    // address: '',
     houseYear: '',
     houseType: 'Панельный',
     floors: '',
@@ -39,6 +39,20 @@ const EditProposal = ({
 
   const [photosToDestroy, setPhotosToDestroy] = useState([]);
 
+  const [address, setAddress] = useState({
+    coords: [],
+    province: '',
+    locality: '',
+    street: '',
+    house: '',
+    addressLine: '',
+    shortAddressLine: '',
+    route: '',
+    metro: '',
+    metroDuration: null,
+    district: ''
+  });
+
   const [mapData, setMapData] = useState({
     coordinates: [55.75, 37.57],
     zoom: 9
@@ -50,7 +64,7 @@ const EditProposal = ({
     setFormData({
       dealType:
         proposal === null || !proposal.dealType ? '' : proposal.dealType,
-      address: proposal === null || !proposal.address ? '' : proposal.address,
+      // address: proposal === null || !proposal.address ? '' : proposal.address,
       houseYear:
         proposal === null || !proposal.houseYear ? '' : proposal.houseYear,
       houseType:
@@ -78,7 +92,7 @@ const EditProposal = ({
     getProposalById,
     match.params.id,
     proposal.dealType,
-    proposal.address,
+    // proposal.address,
     proposal.houseYear,
     proposal.houseType,
     proposal.floors,
@@ -99,9 +113,21 @@ const EditProposal = ({
     setPreviews(proposal === null ? [] : proposal.proposalPhotos);
   }, []);
 
+  useEffect(() => {
+    setAddress(proposal === null ? '' : proposal.address);
+  }, [proposal.address]);
+
+  useEffect(() => {
+    setMapData({
+      // ...mapData,
+      coordinates: proposal !== null && proposal.address.coords,
+      zoom: 17
+    });
+  }, [proposal.address.coords]);
+
   const {
     dealType,
-    address,
+    // address,
     houseYear,
     houseType,
     floors,
@@ -121,27 +147,175 @@ const EditProposal = ({
   const { coordinates, zoom } = mapData;
 
   const onLoad = ymaps => {
-    ymaps.geocode(proposal.address, { results: 1 }).then(res => {
-      setMapData({
-        ...mapData,
-        coordinates: res.geoObjects.get(0).geometry._coordinates,
-        zoom: 17
-      });
-    });
+    // ymaps.geocode(proposal.address.coords, { results: 1 }).then(res => {
+    //   setMapData({
+    //     ...mapData,
+    //     coordinates: res.geoObjects.get(0).geometry._coordinates,
+    //     zoom: 17
+    //   });
+    // });
 
-    const suggestView = new ymaps.SuggestView('address');
+    const suggestView = new ymaps.SuggestView('addressLine');
+
+    // suggestView.events.add('select', e => {
+    //   const selectedAddress = e.get('item').value;
+    //   setFormData({ ...formData, address: selectedAddress });
+
+    //   ymaps.geocode(selectedAddress, { results: 1 }).then(res => {
+    //     setMapData({
+    //       ...mapData,
+    //       coordinates: res.geoObjects.get(0).geometry._coordinates,
+    //       zoom: 17
+    //     });
+    //   });
+    // });
 
     suggestView.events.add('select', e => {
       const selectedAddress = e.get('item').value;
-      setFormData({ ...formData, address: selectedAddress });
 
-      ymaps.geocode(selectedAddress, { results: 1 }).then(res => {
-        setMapData({
-          ...mapData,
-          coordinates: res.geoObjects.get(0).geometry._coordinates,
-          zoom: 17
-        });
-      });
+      ymaps.geocode(selectedAddress, { results: 1, json: true }).then(
+        res => {
+          const geoObject = res.GeoObjectCollection.featureMember[0].GeoObject;
+          const resAddress =
+            geoObject.metaDataProperty.GeocoderMetaData.Address;
+
+          if (resAddress.country_code !== 'RU') {
+            console.log(
+              'Приложением не предусмотрена регистрация объектов, находящихся вне территории Российской Федерации'
+            );
+          } else {
+            const address = {};
+            const coordinates = geoObject.Point.pos;
+            const space = coordinates.indexOf(' ');
+            const coords = [
+              parseFloat(coordinates.substring(space + 1)),
+              parseFloat(coordinates.substring(0, space))
+            ];
+            address.coords = coords;
+
+            let provinceCounter = 0;
+            resAddress.Components.forEach(component => {
+              switch (component.kind) {
+                case 'province':
+                  if (provinceCounter === 0) {
+                    provinceCounter++;
+                  } else {
+                    address.province = component.name;
+                  }
+                  break;
+                case 'locality':
+                  address.locality = component.name;
+                  break;
+                case 'street':
+                  address.street = component.name;
+                  break;
+                case 'house':
+                  address.house = component.name;
+                  break;
+                default:
+                  break;
+              }
+            });
+
+            address.addressLine = selectedAddress;
+            address.shortAddressLine =
+              address.locality +
+              ', ' +
+              (address.street ? address.street + ', ' : '') +
+              address.house;
+
+            ymaps
+              .geocode(coords, {
+                results: 1,
+                kind: 'metro',
+                json: true
+              })
+              .then(result => {
+                const featureMember = result.GeoObjectCollection.featureMember;
+                if (featureMember.length > 0) {
+                  const metroAddress =
+                    featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData
+                      .Address;
+                  const metroCoordinates = featureMember[0].GeoObject.Point.pos;
+                  const space = metroCoordinates.indexOf(' ');
+                  const coords = [
+                    parseFloat(metroCoordinates.substring(space + 1)),
+                    parseFloat(metroCoordinates.substring(0, space))
+                  ];
+                  const metroCoords = coords;
+                  metroAddress.Components.forEach(component => {
+                    switch (component.kind) {
+                      case 'route':
+                        address.route = component.name;
+                        break;
+                      case 'metro':
+                        address.metro = component.name;
+                        break;
+                      default:
+                        break;
+                    }
+                  });
+
+                  const modes = ['auto', 'masstransit', 'pedestrian'];
+                  const metroDuration = {};
+
+                  for (let mode of modes) {
+                    const multiRoute = new ymaps.multiRouter.MultiRoute({
+                      referencePoints: [address.coords, metroCoords],
+                      params: { routingMode: mode }
+                    });
+                    multiRoute.model.events.add('requestsuccess', () => {
+                      metroDuration[
+                        mode
+                      ] = multiRoute
+                        .getActiveRoute()
+                        .properties.get('duration');
+                    });
+                  }
+
+                  address.metroDuration = metroDuration;
+                }
+              });
+
+            ymaps
+              .geocode(coords, {
+                results: 1,
+                kind: 'district',
+                json: true
+              })
+              .then(result => {
+                const featureMember = result.GeoObjectCollection.featureMember;
+                if (featureMember.length > 0) {
+                  const districtAddress =
+                    featureMember[0].GeoObject.metaDataProperty.GeocoderMetaData
+                      .Address;
+                  let districtSet = false;
+                  districtAddress.Components.forEach(component => {
+                    switch (component.kind) {
+                      case 'district':
+                        if (!districtSet) {
+                          address.district = component.name;
+                          districtSet = true;
+                        }
+                        break;
+                      default:
+                        break;
+                    }
+                  });
+                }
+              });
+
+            setAddress(address);
+
+            setMapData({
+              ...mapData,
+              coordinates: address.coords,
+              zoom: 17
+            });
+          }
+        },
+        err => console.error(err)
+      );
     });
   };
 
@@ -199,10 +373,21 @@ const EditProposal = ({
     ]);
   };
 
+  const onAddressChange = e => {
+    setAddress({ ...address, addressLine: e.target.value });
+  };
+
   const onSubmit = async e => {
     e.preventDefault();
 
-    updateProposal(match.params.id, formData, files, photosToDestroy, history);
+    updateProposal(
+      match.params.id,
+      formData,
+      address,
+      files,
+      photosToDestroy,
+      history
+    );
   };
 
   return (
@@ -231,14 +416,14 @@ const EditProposal = ({
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="address">Выберите адрес дома</label>
+              <label htmlFor="addressLine">Выберите адрес дома</label>
               <input
                 type="text"
-                id="address"
-                name="address"
-                value={address}
+                id="addressLine"
+                name="addressLine"
+                value={address.addressLine}
                 placeholder="Начните набирать адрес..."
-                onChange={e => onChange(e)}
+                onChange={e => onAddressChange(e)}
               />
               <YMaps
                 query={{

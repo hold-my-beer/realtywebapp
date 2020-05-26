@@ -4,7 +4,9 @@ import {
   GET_PROPOSALS,
   PROPOSAL_ERROR,
   SET_PROPOSAL_LOADING,
-  DELETE_PROPOSAL
+  DELETE_PROPOSAL,
+  SEARCH_ERROR,
+  GET_SEARCH
 } from './types';
 import { setAlert } from './alert';
 import { CLOUDINARY_URL, CLOUDINARY_PRESET } from './consts';
@@ -27,6 +29,99 @@ export const getCurrentUserProposals = () => async dispatch => {
       errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
     }
 
+    dispatch({
+      type: PROPOSAL_ERROR
+    });
+  }
+};
+
+// Get proposals by parameters
+export const getProposalsByParameters = (
+  formData,
+  address
+) => async dispatch => {
+  // const {
+  //   dealType,
+  //   priceFrom,
+  //   priceTo,
+  //   houseYearFrom,
+  //   houseYearTo,
+  //   panel,
+  //   block,
+  //   brick,
+  //   monolithic,
+  //   floorsFrom,
+  //   floorsTo,
+  //   elevator,
+  //   floorFrom,
+  //   floorTo,
+  //   exceptLast,
+  //   roomsNumberFrom,
+  //   roomsNumberTo,
+  //   totalAreaFrom,
+  //   totalAreaTo,
+  //   livingAreaFrom,
+  //   livingAreaTo,
+  //   kitchenAreaFrom,
+  //   kitchenAreaTo,
+  //   balcony,
+  //   windows,
+  //   cooker,
+  //   bathroom,
+  //   searchName
+  // } = formData;
+
+  // const {
+  //   province,
+  //   locality,
+  //   metroDuration,
+  //   pedestrian,
+  //   addressDistricts,
+  //   addressRoutes,
+  //   addressMetros
+  // } = address;
+
+  // console.log('in getByParameters');
+
+  const params = new URLSearchParams();
+  for (let item in formData) {
+    params.set(item.toString(), formData[item]);
+  }
+
+  for (let item in address) {
+    const key = item.toString();
+    const val = address[item];
+
+    if (Array.isArray(val)) {
+      // console.log(val);
+      if (val.length > 0) {
+        // params.set(key, val[0]);
+        for (let i = 0; i < val.length; i++) {
+          params.append(key, val[i]);
+        }
+      } else {
+        params.set(key, []);
+      }
+    } else {
+      params.set(key, val);
+    }
+  }
+
+  try {
+    const res = await axios.get('/api/proposals/search', {
+      params: params
+    });
+
+    dispatch({
+      type: GET_PROPOSALS,
+      payload: res.data
+    });
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
     dispatch({
       type: PROPOSAL_ERROR
     });
@@ -105,6 +200,7 @@ export const createProposal = (
 export const updateProposal = (
   id,
   formData,
+  address,
   files,
   photosToDestroy,
   history
@@ -115,6 +211,7 @@ export const updateProposal = (
     let photosToAdd = await uploadProposalPhotos(files);
 
     let dataToPost = formData;
+    dataToPost.address = address;
     dataToPost.photosToAdd = photosToAdd;
     dataToPost.photosToDestroy = photosToDestroy;
 

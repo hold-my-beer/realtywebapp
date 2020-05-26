@@ -53,7 +53,7 @@ const ProposalSchema = new mongoose.Schema({
     metroDuration: {
       auto: {
         value: {
-          type: String
+          type: Number
         },
         text: {
           type: String
@@ -61,7 +61,7 @@ const ProposalSchema = new mongoose.Schema({
       },
       masstransit: {
         value: {
-          type: String
+          type: Number
         },
         text: {
           type: String
@@ -69,7 +69,7 @@ const ProposalSchema = new mongoose.Schema({
       },
       pedestrian: {
         value: {
-          type: String
+          type: Number
         },
         text: {
           type: String

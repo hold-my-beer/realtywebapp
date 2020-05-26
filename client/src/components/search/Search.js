@@ -1,12 +1,22 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { getProvinces } from '../../actions/province';
+import { getProposalsByParameters } from '../../actions/proposal';
+import { addSearch } from '../../actions/search';
 
-const Search = props => {
-  const [searchType, setSearchType] = useState('0');
+import Spinner from '../layout/Spinner';
+
+const Search = ({
+  getProvinces,
+  getProposalsByParameters,
+  addSearch,
+  province: { provinces }
+}) => {
+  const [searchType, setSearchType] = useState('');
 
   const [formData, setFormData] = useState({
     dealType: 'Продажа',
-    address: '',
     priceFrom: '',
     priceTo: '',
     houseYearFrom: '',
@@ -17,41 +27,48 @@ const Search = props => {
     block: '',
     brick: '',
     monolithic: '',
-
     floorsFrom: '',
     floorsTo: '',
-
     elevator: 'Не важно',
     floorFrom: '',
     floorTo: '',
     exceptLast: 'false',
-
     roomsNumberFrom: '',
     roomsNumberTo: '',
-
     totalAreaFrom: '',
     totalAreaTo: '',
-
     livingAreaFrom: '',
     livingAreaTo: '',
-
     kitchenAreaFrom: '',
     kitchenAreaTo: '',
-
     balcony: 'Не важно',
     windows: 'Не важно',
     cooker: 'Не важно',
     bathroom: 'Не важно',
-    // saveSearchToggle: false,
     searchName: ''
   });
 
-  const [addressData, setAddressData] = useState({
-    type: 'address',
-    address: ''
+  const [address, setAddress] = useState({
+    province: '',
+    locality: '',
+    metroDuration: '',
+    pedestrian: false,
+    addressDistricts: [],
+    addressRoutes: [],
+    addressMetros: []
+  });
+
+  const [provinceDropdown, setProvinceDropdown] = useState({
+    localities: [],
+    districts: [],
+    routes: [],
+    metros: []
   });
 
   const [toggleAny, setToggleAny] = useState({
+    anyDistrict: false,
+    anyRoute: false,
+    anyMetro: false,
     anyHouseYear: false,
     anyHouseType: false,
     anyFloors: false,
@@ -64,49 +81,59 @@ const Search = props => {
 
   const [displaySaveParameters, toggleSaveParameters] = useState(false);
 
+  useEffect(() => {
+    getProvinces();
+  }, []);
+
   const {
     dealType,
-    address,
     priceFrom,
     priceTo,
     houseYearFrom,
     houseYearTo,
 
     // houseType,
-    // panel,
-    // block,
-    // brick,
-    // monolithic,
+    panel,
+    block,
+    brick,
+    monolithic,
 
     floorsFrom,
     floorsTo,
-
     elevator,
     floorFrom,
     floorTo,
     exceptLast,
-
     roomsNumberFrom,
     roomsNumberTo,
-
     totalAreaFrom,
     totalAreaTo,
-
     livingAreaFrom,
     livingAreaTo,
-
     kitchenAreaFrom,
     kitchenAreaTo,
-
     balcony,
     windows,
     cooker,
     bathroom,
-    // saveSearchToggle,
     searchName
   } = formData;
 
   const {
+    province,
+    locality,
+    metroDuration,
+    addressDistricts,
+    addressRoutes,
+    addressMetros
+  } = address;
+
+  const { localities, districts, routes, metros } = provinceDropdown;
+
+  const {
+    anyDistrict,
+    anyRoute,
+    anyMetro,
     anyHouseYear,
     anyHouseType,
     anyFloors,
@@ -119,10 +146,176 @@ const Search = props => {
 
   const onSearchTypeChange = e => {
     setSearchType(e.target.value);
+    setAddress({
+      ...address,
+      addressDistricts: e.target.value === '0' ? addressDistricts : [],
+      addressRoutes: e.target.value === '1' ? addressRoutes : [],
+      addressMetros: e.target.value === '1' ? addressDistricts : []
+    });
+    setToggleAny({
+      ...toggleAny,
+      anyDistrict: false,
+      anyRoute: false,
+      anyMetro: false
+    });
   };
 
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const onAddressChange = e => {
+    switch (e.target.name) {
+      case 'province':
+        setAddress({
+          province: e.target.value,
+          locality: '',
+          addressDistricts: [],
+          addressRoutes: [],
+          addressMetros: [],
+          metroDuration: '',
+          pedestrian: false
+        });
+        let localitiesArray = [];
+        if (e.target.value) {
+          const provinceIndex = provinces
+            .map(item => item.name)
+            .indexOf(e.target.value);
+          localitiesArray = provinces[provinceIndex].localities;
+        }
+        setProvinceDropdown({
+          localities: localitiesArray,
+          districts: [],
+          routes: [],
+          metros: []
+        });
+        break;
+      case 'locality':
+        setAddress({
+          ...address,
+          locality: e.target.value,
+          addressDistricts: [],
+          addressRoutes: [],
+          addressMetros: [],
+          metroDuration: '',
+          pedestrian: false
+        });
+        let districtsArray = [];
+        let routesArray = [];
+        if (e.target.value) {
+          const localityIndex = localities
+            .map(item => item.name)
+            .indexOf(e.target.value);
+          districtsArray = localities[localityIndex].districts;
+          routesArray = localities[localityIndex].routes;
+        }
+        setProvinceDropdown({
+          ...provinceDropdown,
+          districts: districtsArray,
+          routes: routesArray,
+          metros: []
+        });
+        if (routesArray.length === 0) {
+          setSearchType('0');
+        }
+        break;
+      case 'metroDuration':
+        setAddress({ ...address, metroDuration: e.target.value });
+        break;
+      default:
+        break;
+    }
+    setToggleAny({
+      ...toggleAny,
+      anyDistrict: false,
+      anyRoute: false,
+      anyMetro: false
+    });
+  };
+
+  const onDistrictChange = e => {
+    setAddress({
+      ...address,
+      addressDistricts: e.target.checked
+        ? [...addressDistricts, e.target.value]
+        : addressDistricts.filter(item => item !== e.target.name)
+    });
+  };
+
+  const onRouteChange = e => {
+    setAddress({
+      ...address,
+      addressRoutes: e.target.checked
+        ? [...addressRoutes, e.target.value]
+        : addressRoutes.filter(item => item !== e.target.name),
+      addressMetros: []
+    });
+    let metrosArray = [];
+    if (e.target.value) {
+      const routeIndex = routes.map(item => item.name).indexOf(e.target.value);
+      metrosArray = routes[routeIndex].metros;
+    }
+    setProvinceDropdown({
+      ...provinceDropdown,
+      metros: e.target.checked
+        ? [...metros, ...metrosArray]
+        : metros.filter(item => !metrosArray.includes(item))
+    });
+  };
+
+  const onMetroChange = e => {
+    setAddress({
+      ...address,
+      addressMetros: e.target.checked
+        ? [...addressMetros, e.target.value]
+        : addressMetros.filter(item => item !== e.target.name)
+    });
+  };
+
+  const onToggleAnyDistrict = e => {
+    setToggleAny({ ...toggleAny, [e.target.name]: e.target.checked });
+    setAddress({
+      ...address,
+      addressDistricts: e.target.checked ? districts.map(item => item.name) : []
+    });
+  };
+
+  const onToggleAnyRoute = e => {
+    setToggleAny({
+      ...toggleAny,
+      [e.target.name]: e.target.checked,
+      anyMetro: e.target.checked ? anyMetro : false
+    });
+    setAddress({
+      ...address,
+      addressRoutes: e.target.checked ? routes.map(item => item.name) : [],
+      addressMetros: e.target.checked ? addressMetros : []
+    });
+    let metrosArray = [];
+    routes.forEach(item => (metrosArray = [...metrosArray, ...item.metros]));
+    setProvinceDropdown({
+      ...provinceDropdown,
+      metros: e.target.checked ? metrosArray : []
+    });
+  };
+
+  const onToggleAnyMetro = e => {
+    setToggleAny({ ...toggleAny, [e.target.name]: e.target.checked });
+    setAddress({
+      ...address,
+      addressMetros: e.target.checked ? metros.map(item => item.name) : []
+    });
+  };
+
+  const onTogglePedestrian = e => {
+    setAddress({ ...address, pedestrian: e.target.checked });
+  };
+
+  const onToggleHouseType = e => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.checked ? e.target.value : ''
+    });
   };
 
   const onToggleAnyHouseYear = e => {
@@ -199,12 +392,20 @@ const Search = props => {
     });
   };
 
+  const onSubmit = async e => {
+    // console.log('in Submit');
+    e.preventDefault();
+
+    // await addSearch(formData, address);
+    await getProposalsByParameters(formData, address);
+  };
+
   return (
     <Fragment>
       <h1 className="text-primary my-1">Поиск квартир</h1>
       <p className="lead">Задайте параметры, чтобы найти квартиру</p>
 
-      <form>
+      <form onSubmit={e => onSubmit(e)}>
         <div className="form-group deal-type">
           <label htmlFor="dealType">Купить / Снять</label>
           <select
@@ -218,54 +419,184 @@ const Search = props => {
             <option value="Аренда">Снять</option>
           </select>
         </div>
-        <div className="form-group">
-          <label>Как искать</label>
-          <select
-            className="select-css my"
-            value={searchType}
-            name="searchType"
-            id="searchType"
-            onChange={e => onSearchTypeChange(e)}
-          >
-            <option value="0">Поиск по адресу, району</option>
-            <option value="1">Поиск на карте города</option>
-            <option value="2">Поиск на карте метро</option>
-          </select>
-          {searchType === '0' && (
-            <div className="search-by search-by-address">
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={address}
-                placeholder="Введите район / метро / улицу..."
-                onChange={e => onChange(e)}
-              />
+        {provinces === null ? (
+          <Spinner />
+        ) : (
+          <Fragment>
+            <div className="form-group province">
+              <label>Выберите регион</label>
+              <select
+                className="select-css"
+                name="province"
+                value={province}
+                id="province"
+                onChange={e => onAddressChange(e)}
+              >
+                <option value="">Все регионы</option>
+                {provinces.map(item => (
+                  <option key={item._id} value={item.name}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
-          {searchType === '1' && (
-            <div className="search-by search-by-address">
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={address}
-                placeholder="Введите адрес объекта..."
-                onChange={e => onChange(e)}
-              />
-              <div className="map city">
-                <img src="../img/city-map.jpg" alt="" />
-              </div>
-            </div>
-          )}
-          {searchType === '2' && (
-            <div className="search-by search-by-metro">
-              <div className="map metro">
-                <img src="../img/city-map.jpg" alt="" />
-              </div>
-            </div>
-          )}
-        </div>
+            {province && localities && (
+              <Fragment>
+                <div className="form-group locality">
+                  <label>Выберите населенный пункт</label>
+                  <select
+                    className="select-css"
+                    name="locality"
+                    value={locality}
+                    id="locality"
+                    onChange={e => onAddressChange(e)}
+                  >
+                    <option value="">Все населенные пункты</option>
+                    {localities.map(item => (
+                      <option key={item._id} value={item.name}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {locality && (
+                  <Fragment>
+                    {districts.length > 0 && routes.length > 0 && (
+                      <div className="form-group search-type">
+                        <label>Как искать</label>
+                        <select
+                          className="select-css"
+                          value={searchType}
+                          name="searchType"
+                          id="searchType"
+                          onChange={e => onSearchTypeChange(e)}
+                        >
+                          <option value="">Выберите тип поиска</option>
+                          <option value="0">
+                            Поиск по населенному пункту / району
+                          </option>
+                          <option value="1">
+                            Поиск по линиям / станциям метро
+                          </option>
+                        </select>
+                      </div>
+                    )}
+                    {searchType === '0' && (
+                      <div className="districts-parameter search-parameter my">
+                        <strong>Районы</strong>
+                        <div className="search-parameter-values">
+                          {districts.map(item => (
+                            <div className="checkbox-group" key={item._id}>
+                              <input
+                                id={item.name}
+                                type="checkbox"
+                                name={item.name}
+                                value={item.name}
+                                onChange={e => onDistrictChange(e)}
+                                disabled={anyDistrict}
+                                style={{
+                                  opacity: `${anyDistrict ? '0.5' : '1'}`
+                                }}
+                                checked={addressDistricts.includes(item.name)}
+                              />
+                              {item.name}
+                            </div>
+                          ))}
+                          <div className="checkbox-group">
+                            <input
+                              type="checkbox"
+                              name="anyDistrict"
+                              onChange={e => onToggleAnyDistrict(e)}
+                            />{' '}
+                            Не важно
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {searchType === '1' && (
+                      <Fragment>
+                        <div className="routes-parameter search-parameter my">
+                          <strong>Линии метро</strong>
+                          <div>
+                            <ul className="routes-list">
+                              {routes.map(item => (
+                                <li className="checkbox-group" key={item._id}>
+                                  <input
+                                    id={item.name}
+                                    type="checkbox"
+                                    name={item.name}
+                                    value={item.name}
+                                    onChange={e => onRouteChange(e)}
+                                    disabled={anyRoute}
+                                    style={{
+                                      opacity: `${anyRoute ? '0.5' : '1'}`
+                                    }}
+                                    checked={addressRoutes.includes(item.name)}
+                                  />
+                                  {item.name}
+                                </li>
+                              ))}
+                            </ul>
+                            <div className="checkbox-group">
+                              <input
+                                type="checkbox"
+                                name="anyRoute"
+                                onChange={e => onToggleAnyRoute(e)}
+                              />{' '}
+                              Не важно
+                            </div>
+                          </div>
+                        </div>
+                        {addressRoutes.length > 0 && (
+                          <Fragment>
+                            <div className="metros-parameter search-parameter my">
+                              <strong>Станции метро</strong>
+                              <div>
+                                <ul className="metros-list">
+                                  {metros.map(item => (
+                                    <li
+                                      className="checkbox-group"
+                                      key={item._id}
+                                    >
+                                      <input
+                                        id={item.name}
+                                        type="checkbox"
+                                        name={item.name}
+                                        value={item.name}
+                                        onChange={e => onMetroChange(e)}
+                                        disabled={anyMetro}
+                                        style={{
+                                          opacity: `${anyMetro ? '0.5' : '1'}`
+                                        }}
+                                        checked={addressMetros.includes(
+                                          item.name
+                                        )}
+                                      />
+                                      {item.name}
+                                    </li>
+                                  ))}
+                                </ul>
+
+                                <div className="checkbox-group">
+                                  <input
+                                    type="checkbox"
+                                    name="anyMetro"
+                                    onChange={e => onToggleAnyMetro(e)}
+                                  />{' '}
+                                  Не важно
+                                </div>
+                              </div>
+                            </div>
+                          </Fragment>
+                        )}
+                      </Fragment>
+                    )}
+                  </Fragment>
+                )}
+              </Fragment>
+            )}
+          </Fragment>
+        )}
         <div className="search-parameters">
           <div className="price-parameter search-parameter">
             <strong>Стоимость, руб.</strong>
@@ -290,6 +621,31 @@ const Search = props => {
               />
             </div>
           </div>
+          {locality && routes.length > 0 && (
+            <div className="metroDuration-parameter search-parameter">
+              <strong>Время до метро, минут</strong>
+              <div className="metroDuration-parameter-values">
+                <input
+                  type="number"
+                  id="metroDuration"
+                  name="metroDuration"
+                  value={metroDuration}
+                  placeholder="Не более..."
+                  min="1"
+                  onChange={e => onAddressChange(e)}
+                />
+              </div>
+              <div className="checkbox-group">
+                <input
+                  type="checkbox"
+                  name="pedestrian"
+                  onChange={e => onTogglePedestrian(e)}
+                />{' '}
+                пешком
+              </div>
+            </div>
+          )}
+
           <div className="year-parameter search-parameter">
             <strong>Год постройки дома</strong>
             <div className="search-parameter-values">
@@ -336,10 +692,10 @@ const Search = props => {
                   type="checkbox"
                   name="panel"
                   value="Панельный"
-                  onChange={e => onChange(e)}
+                  onChange={e => onToggleHouseType(e)}
                   disabled={anyHouseType}
                   style={{ opacity: `${anyHouseType ? '0.5' : '1'}` }}
-                  checked={anyHouseType}
+                  checked={panel === 'Панельный'}
                 />
                 Панельный
               </div>
@@ -349,10 +705,10 @@ const Search = props => {
                   type="checkbox"
                   name="block"
                   value="Блочный"
-                  onChange={e => onChange(e)}
+                  onChange={e => onToggleHouseType(e)}
                   disabled={anyHouseType}
                   style={{ opacity: `${anyHouseType ? '0.5' : '1'}` }}
-                  checked={anyHouseType}
+                  checked={block === 'Блочный'}
                 />{' '}
                 Блочный
               </div>
@@ -362,10 +718,10 @@ const Search = props => {
                   type="checkbox"
                   name="brick"
                   value="Кирпичный"
-                  onChange={e => onChange(e)}
+                  onChange={e => onToggleHouseType(e)}
                   disabled={anyHouseType}
                   style={{ opacity: `${anyHouseType ? '0.5' : '1'}` }}
-                  checked={anyHouseType}
+                  checked={brick === 'Кирпичный'}
                 />
                 Кирпичный
               </div>
@@ -375,10 +731,10 @@ const Search = props => {
                   type="checkbox"
                   name="monolithic"
                   value="Монолит"
-                  onChange={e => onChange(e)}
+                  onChange={e => onToggleHouseType(e)}
                   disabled={anyHouseType}
                   style={{ opacity: `${anyHouseType ? '0.5' : '1'}` }}
-                  checked={anyHouseType}
+                  checked={monolithic === 'Монолит'}
                 />
                 Монолит
               </div>
@@ -500,8 +856,8 @@ const Search = props => {
             <div className="search-parameter-values">
               <input
                 type="number"
-                id="roomsFrom"
-                name="roomsFrom"
+                id="roomsNumberFrom"
+                name="roomsNumberFrom"
                 value={anyRoomsNumber ? '1' : roomsNumberFrom}
                 placeholder="От..."
                 min="1"
@@ -511,8 +867,8 @@ const Search = props => {
               />
               <input
                 type="number"
-                id="roomsTo"
-                name="roomsTo"
+                id="roomsNumberTo"
+                name="roomsNumberTo"
                 value={anyRoomsNumber ? '100' : roomsNumberTo}
                 placeholder="До..."
                 min="1"
@@ -614,8 +970,8 @@ const Search = props => {
                 placeholder="От..."
                 min="1"
                 onChange={e => onChange(e)}
-                disabled={anyLivingArea}
-                style={{ opacity: `${anyLivingArea ? '0.5' : '1'}` }}
+                disabled={anyKitchenArea}
+                style={{ opacity: `${anyKitchenArea ? '0.5' : '1'}` }}
               />
               <input
                 type="number"
@@ -720,8 +1076,8 @@ const Search = props => {
               onChange={e => onChange(e)}
             />
             <small>
-              * Укажите имя поиска, чтобы в будущем быстрее идентифицировать его
-              среди других сохраненных вами поисков
+              * Укажите имя поиска, например "Двушка в Останкино", чтобы было
+              удобнее идентифицировать его среди других сохраненных вами поисков
             </small>
           </div>
         )}
@@ -736,6 +1092,19 @@ const Search = props => {
   );
 };
 
-Search.propTypes = {};
+Search.propTypes = {
+  getProvinces: PropTypes.func.isRequired,
+  getProposalsByParameters: PropTypes.func.isRequired,
+  addSearch: PropTypes.func.isRequired,
+  province: PropTypes.object.isRequired
+};
 
-export default Search;
+const mapStateToProps = state => ({
+  province: state.province
+});
+
+export default connect(mapStateToProps, {
+  getProvinces,
+  getProposalsByParameters,
+  addSearch
+})(Search);

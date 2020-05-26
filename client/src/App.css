@@ -659,7 +659,8 @@ input[type='file'] {
   border-radius: 5px;
 }
 
-.search-parameter-values {
+.search-parameter-values,
+.metroDuration-parameter-values {
   display: flex;
   flex-wrap: wrap;
   width: 100%;
@@ -674,10 +675,27 @@ input[type='file'] {
   border: none;
 }
 
+.metroDuration-parameter-values input[type='number'] {
+  width: 93%;
+  margin-right: 1rem;
+  background: #eee;
+  border: none;
+}
+
 .search-parameter-values select {
   width: 93%;
   background: #eee;
   border: none;
+}
+
+.routes-list {
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.metros-list {
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .checkbox-group {

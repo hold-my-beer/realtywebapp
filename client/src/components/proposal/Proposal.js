@@ -46,7 +46,7 @@ const Proposal = ({
             />{' '}
             рублей
           </h2>
-          <p className="lead">{proposal.address}</p>
+          <p className="lead">{proposal.address.shortAddressLine}</p>
           <div className="proposal-photos">
             {proposal.proposalPhotos.map(photo => (
               <div key={photo.photoID} className="proposal-photo">
@@ -55,7 +55,7 @@ const Proposal = ({
             ))}
           </div>
 
-          <ProposalMap address={proposal.address} />
+          <ProposalMap coords={proposal.address.coords} />
 
           <div className="parameters my-2">
             <div className="parameter-name">

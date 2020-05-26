@@ -9,8 +9,6 @@ import { YMaps, Map, GeoObject } from 'react-yandex-maps';
 const CreateProposal = ({ createProposal, history }) => {
   const [formData, setFormData] = useState({
     dealType: 'Продажа',
-    // address: null,
-    // addressLine: '',
     houseYear: '',
     houseType: 'Панельный',
     floors: '',
@@ -38,7 +36,11 @@ const CreateProposal = ({ createProposal, history }) => {
     street: '',
     house: '',
     addressLine: '',
-    shortAddressLine: ''
+    shortAddressLine: '',
+    route: '',
+    metro: '',
+    metroDuration: null,
+    district: ''
   });
 
   const [mapData, setMapData] = useState({
@@ -48,7 +50,6 @@ const CreateProposal = ({ createProposal, history }) => {
 
   const {
     dealType,
-    // addressLine,
     houseYear,
     houseType,
     floors,
@@ -66,16 +67,6 @@ const CreateProposal = ({ createProposal, history }) => {
   } = formData;
 
   const { coordinates, zoom } = mapData;
-
-  const {
-    coords,
-    province,
-    locality,
-    street,
-    house,
-    addressLine,
-    shortAddressLine
-  } = address;
 
   const onLoad = ymaps => {
     const suggestView = new ymaps.SuggestView('addressLine');
@@ -156,11 +147,9 @@ const CreateProposal = ({ createProposal, history }) => {
                   metroAddress.Components.forEach(component => {
                     switch (component.kind) {
                       case 'route':
-                        console.log(component.name);
                         address.route = component.name;
                         break;
                       case 'metro':
-                        console.log(component.name);
                         address.metro = component.name;
                         break;
                       default:
@@ -170,9 +159,6 @@ const CreateProposal = ({ createProposal, history }) => {
 
                   const modes = ['auto', 'masstransit', 'pedestrian'];
                   const metroDuration = {};
-
-                  console.log(address.coords);
-                  console.log(metroCoords);
 
                   for (let mode of modes) {
                     const multiRoute = new ymaps.multiRouter.MultiRoute({

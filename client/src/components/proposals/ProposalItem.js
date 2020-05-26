@@ -6,7 +6,13 @@ import NumberFormat from 'react-number-format';
 import defaultHouse from '../../img/defaultHouse.png';
 
 const ProposalItem = ({
-  proposal: { _id, roomsNumber, address, proposalPhotos, price }
+  proposal: {
+    _id,
+    roomsNumber,
+    address: { shortAddressLine },
+    proposalPhotos,
+    price
+  }
 }) => {
   return (
     <div className="proposal-card">
@@ -14,7 +20,7 @@ const ProposalItem = ({
         <h3 className="text-primary">
           <span>{roomsNumber}</span> комнатная квартира
         </h3>
-        <h4 className="my">{address}</h4>
+        <h4 className="my">{shortAddressLine}</h4>
       </div>
       <div className="proposal-card-content">
         <div className="proposal-card-photo">
