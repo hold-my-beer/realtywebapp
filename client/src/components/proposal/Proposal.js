@@ -58,6 +58,28 @@ const Proposal = ({
           <ProposalMap coords={proposal.address.coords} />
 
           <div className="parameters my-2">
+            {proposal.address.metro !== '' && (
+              <Fragment>
+                <div className="parameter-name">
+                  <strong>Время до метро</strong>
+                </div>
+                <div className="parameter-value">
+                  <p>
+                    {proposal.address.metroDuration.auto.text}{' '}
+                    <i>на автомобиле</i>
+                  </p>
+                  <p>
+                    {proposal.address.metroDuration.masstransit.text}{' '}
+                    <i>на общественном транспорте</i>
+                  </p>
+                  <p>
+                    {proposal.address.metroDuration.pedestrian.text}{' '}
+                    <i>пешком</i>
+                  </p>
+                </div>
+              </Fragment>
+            )}
+
             <div className="parameter-name">
               <strong>Год постройки дома</strong>
             </div>

@@ -3,13 +3,20 @@ import { GET_SEARCH, SEARCH_ERROR, SET_SEARCH_LOADING } from './types';
 import { setAlert } from './alert';
 
 // Add new search parameters
-export const addSearch = (formData, address) => async dispatch => {
+export const addSearch = (
+  formData,
+  address,
+  searchData,
+  searchType
+) => async dispatch => {
   dispatch({
     type: SET_SEARCH_LOADING
   });
 
   let search = formData;
   search.address = address;
+  search.name = searchData.searchName;
+  search.searchType = searchType;
 
   const config = {
     headers: {

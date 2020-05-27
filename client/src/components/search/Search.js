@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getProvinces } from '../../actions/province';
@@ -11,7 +12,8 @@ const Search = ({
   getProvinces,
   getProposalsByParameters,
   addSearch,
-  province: { provinces }
+  province: { provinces },
+  history
 }) => {
   const [searchType, setSearchType] = useState('');
 
@@ -44,7 +46,13 @@ const Search = ({
     balcony: 'Не важно',
     windows: 'Не важно',
     cooker: 'Не важно',
-    bathroom: 'Не важно',
+    bathroom: 'Не важно'
+    // saveSearch: false,
+    // searchName: ''
+  });
+
+  const [searchData, setSearchData] = useState({
+    saveSearch: false,
     searchName: ''
   });
 
@@ -79,7 +87,7 @@ const Search = ({
     anyKitchenArea: false
   });
 
-  const [displaySaveParameters, toggleSaveParameters] = useState(false);
+  // const [displaySaveParameters, toggleSaveParameters] = useState(false);
 
   useEffect(() => {
     getProvinces();
@@ -115,9 +123,12 @@ const Search = ({
     balcony,
     windows,
     cooker,
-    bathroom,
-    searchName
+    bathroom
+    // saveSearch,
+    // searchName
   } = formData;
+
+  const { saveSearch, searchName } = searchData;
 
   const {
     province,
@@ -392,12 +403,16 @@ const Search = ({
     });
   };
 
-  const onSubmit = async e => {
+  const onSubmit = e => {
     // console.log('in Submit');
     e.preventDefault();
 
-    // await addSearch(formData, address);
-    await getProposalsByParameters(formData, address);
+    if (saveSearch) {
+      getProposalsByParameters(formData, address, history, true);
+      addSearch(formData, address, searchData, searchType, history);
+    } else {
+      getProposalsByParameters(formData, address, history);
+    }
   };
 
   return (
@@ -1058,29 +1073,43 @@ const Search = ({
             type="checkbox"
             id="save-parameters"
             name="saveParameters"
-            value="on"
+            // value="on"
+            // value={saveSearch}
             className="my-1"
-            onChange={() => toggleSaveParameters(!displaySaveParameters)}
+            // onChange={() => toggleSaveParameters(!displaySaveParameters)}
+            onChange={e =>
+              setSearchData({ ...searchData, saveSearch: e.target.checked })
+            }
           />
           <label htmlFor="save-parameters">Сохранить параметры поиска</label>
         </div>
-        {displaySaveParameters && (
-          <div className="search-name-group">
-            <strong>Наименование поиска *</strong>
-            <input
-              type="text"
-              name="searchName"
-              id="searchName"
-              value={searchName}
-              placeholder="Введите имя поиска..."
-              onChange={e => onChange(e)}
-            />
-            <small>
-              * Укажите имя поиска, например "Двушка в Останкино", чтобы было
-              удобнее идентифицировать его среди других сохраненных вами поисков
-            </small>
-          </div>
-        )}
+        {
+          // displaySaveParameters
+          saveSearch && (
+            <div className="search-name-group">
+              <strong>Наименование поиска *</strong>
+              <input
+                type="text"
+                name="searchName"
+                id="searchName"
+                value={searchName}
+                placeholder="Введите имя поиска..."
+                // onChange={e => onChange(e)}
+                onChange={e =>
+                  setSearchData({
+                    ...searchData,
+                    searchName: e.target.value
+                  })
+                }
+              />
+              <small>
+                * Укажите имя поиска, например "Двушка в Останкино", чтобы было
+                удобнее идентифицировать его среди других сохраненных вами
+                поисков
+              </small>
+            </div>
+          )
+        }
 
         <input
           type="submit"
@@ -1107,4 +1136,4 @@ export default connect(mapStateToProps, {
   getProvinces,
   getProposalsByParameters,
   addSearch
-})(Search);
+})(withRouter(Search));

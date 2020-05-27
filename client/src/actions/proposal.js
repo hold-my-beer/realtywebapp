@@ -38,7 +38,8 @@ export const getCurrentUserProposals = () => async dispatch => {
 // Get proposals by parameters
 export const getProposalsByParameters = (
   formData,
-  address
+  address,
+  history
 ) => async dispatch => {
   // const {
   //   dealType,
@@ -116,6 +117,8 @@ export const getProposalsByParameters = (
       type: GET_PROPOSALS,
       payload: res.data
     });
+
+    history.push('/proposals');
   } catch (err) {
     const errors = err.response.data.errors;
 

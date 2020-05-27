@@ -15,8 +15,34 @@ const SearchSchema = new mongoose.Schema({
   searchType: {
     type: String
   },
-  address: {
+  province: {
+    type: String,
+    required: true
+  },
+  locality: {
+    type: String,
+    required: true
+  },
+  addressDistricts: [
+    {
+      type: String
+    }
+  ],
+  addressRoutes: [
+    {
+      type: String
+    }
+  ],
+  addressMetros: [
+    {
+      type: String
+    }
+  ],
+  metroDuration: {
     type: String
+  },
+  pedestrian: {
+    type: Boolean
   },
   houseYearFrom: {
     type: Number
@@ -42,7 +68,7 @@ const SearchSchema = new mongoose.Schema({
   floorTo: {
     type: Number
   },
-  floorExceptLast: {
+  exceptLast: {
     type: Boolean
   },
   roomsNumberFrom: {

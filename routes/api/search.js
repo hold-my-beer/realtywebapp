@@ -53,37 +53,47 @@ router.post(
   [
     auth,
     [
-      check('dealType', 'Укажите корректный тип сделки').isIn([
-        'Продаю',
-        'Сдаю'
-      ]),
       check('searchType', 'Укажите корректный тип поиска')
         .if((val, { req }) => req.body.address)
         .isIn([
-          'Поиск по адресу, району',
-          'Поиск на карте города',
-          'Поиск на карте метро'
+          'Поиск по населенному пункту / району',
+          'Поиск по линиям / станциям метро'
         ]),
+      check('dealType', 'Укажите корректный тип сделки').isIn([
+        'Продажа',
+        'Аренда'
+      ]),
+      check('province', 'Укажите регион').not().isEmpty(),
+      check('locality', 'Укажите населенный пункт').not().isEmpty(),
       check('houseYearFrom', 'Укажите корректный год постройки дома')
         .if((val, { req }) => val)
         .isInt({
-          min: 1900,
+          min: 1850,
           max: new Date().getFullYear()
         }),
       check('houseYearTo', 'Укажите корректный год постройки дома')
         .if((val, { req }) => val)
         .isInt({
-          min: 1900,
+          min: 1850,
           max: new Date().getFullYear()
         }),
       check('houseYearTo', 'Укажите корректный год постройки дома')
-        .if((val, { req }) => val && req.body.houseYearFrom)
+        .if((val, { req }) => val && req.query.houseYearFrom)
         .custom(
-          (val, { req }) => parseInt(val) >= parseInt(req.body.houseYearFrom)
+          (val, { req }) => parseInt(val) >= parseInt(req.query.houseYearFrom)
         ),
-      check('houseType', 'Укажите корректный тип дома')
+      check('panel', 'Укажите корректный тип дома')
         .if((val, { req }) => val)
-        .isIn(['Не важно', 'Панельный', 'Блочный', 'Кирпичный', 'Монолит']),
+        .isIn(['Панельный']),
+      check('block', 'Укажите корректный тип дома')
+        .if((val, { req }) => val)
+        .isIn(['Блочный']),
+      check('brick', 'Укажите корректный тип дома')
+        .if((val, { req }) => val)
+        .isIn(['Кирпичный']),
+      check('monolithic', 'Укажите корректный тип дома')
+        .if((val, { req }) => val)
+        .isIn(['Монолит']),
       check('floorsFrom', 'Укажите корректное количество этажей в доме')
         .if((val, { req }) => val)
         .isInt({
@@ -95,9 +105,9 @@ router.post(
           min: 1
         }),
       check('floorsTo', 'Укажите корректное количество этажей в доме')
-        .if((val, { req }) => val && req.body.floorsFrom)
+        .if((val, { req }) => val && req.query.floorsFrom)
         .custom(
-          (val, { req }) => parseInt(val) >= parseInt(req.body.floorsFrom)
+          (val, { req }) => parseInt(val) >= parseInt(req.query.floorsFrom)
         ),
       check('elevator', 'Укажите наличие лифта')
         .if((val, { req }) => val)
@@ -108,21 +118,25 @@ router.post(
           min: 1
         }),
       check('floorFrom', 'Укажите корректный этаж')
-        .if((val, { req }) => val && req.body.floorsTo)
-        .custom((val, { req }) => parseInt(val) <= parseInt(req.body.floorsTo)),
+        .if((val, { req }) => val && req.query.floorsTo)
+        .custom(
+          (val, { req }) => parseInt(val) <= parseInt(req.query.floorsTo)
+        ),
       check('floorTo', 'Укажите корректный этаж')
         .if((val, { req }) => val)
         .isInt({
           min: 1
         }),
       check('floorTo', 'Укажите корректный этаж')
-        .if((val, { req }) => val && req.body.floorsFrom)
+        .if((val, { req }) => val && req.query.floorsFrom)
         .custom(
-          (val, { req }) => parseInt(val) >= parseInt(req.body.floorsFrom)
+          (val, { req }) => parseInt(val) >= parseInt(req.query.floorsFrom)
         ),
       check('floorTo', 'Укажите корректный этаж')
-        .if((val, { req }) => val && req.body.floorsTo)
-        .custom((val, { req }) => parseInt(val) <= parseInt(req.body.floorsTo)),
+        .if((val, { req }) => val && req.query.floorsTo)
+        .custom(
+          (val, { req }) => parseInt(val) <= parseInt(req.query.floorsTo)
+        ),
       check('roomsNumberFrom', 'Укажите корректное количество комнат')
         .if((val, { req }) => val)
         .isInt({
@@ -134,9 +148,9 @@ router.post(
           min: 1
         }),
       check('roomsNumberTo', 'Укажите корректное количество комнат')
-        .if((val, { req }) => val && req.body.roomsNumberFrom)
+        .if((val, { req }) => val && req.query.roomsNumberFrom)
         .custom(
-          (val, { req }) => parseInt(val) >= parseInt(req.body.roomsNumberFrom)
+          (val, { req }) => parseInt(val) >= parseInt(req.query.roomsNumberFrom)
         ),
       check('totalAreaFrom', 'Укажите корректную общую площадь')
         .if((val, { req }) => val)
@@ -149,65 +163,64 @@ router.post(
           min: 0.1
         }),
       check('totalAreaTo', 'Укажите корректную общую площадь')
-        .if((val, { req }) => val && req.body.totalAreaFrom)
+        .if((val, { req }) => val && req.query.totalAreaFrom)
         .custom(
           (val, { req }) =>
-            parseFloat(val) >= parseFloat(req.body.totalAreaFrom)
+            parseFloat(val) >= parseFloat(req.query.totalAreaFrom)
         ),
       check('livingAreaFrom', 'Укажите корректную жилую площадь')
         .if((val, { req }) => val)
         .isFloat({ min: 0.1 }),
+      // check('livingAreaFrom', 'Укажите корректную жилую площадь')
+      //   .if((val, { req }) => val && req.query.totalAreaFrom)
+      //   .custom(
+      //     (val, { req }) => parseFloat(val) <= parseFloat(req.query.totalAreaFrom)
+      //   ),
       check('livingAreaFrom', 'Укажите корректную жилую площадь')
-        .if((val, { req }) => val && req.body.totalAreaFrom)
+        .if((val, { req }) => val && req.query.totalAreaTo)
         .custom(
-          (val, { req }) =>
-            parseFloat(val) <= parseFloat(req.body.totalAreaFrom)
-        ),
-      check('livingAreaFrom', 'Укажите корректную жилую площадь')
-        .if((val, { req }) => val && req.body.totalAreaTo)
-        .custom(
-          (val, { req }) => parseFloat(val) <= parseFloat(req.body.totalAreaTo)
+          (val, { req }) => parseFloat(val) <= parseFloat(req.query.totalAreaTo)
         ),
       check('livingAreaTo', 'Укажите корректную жилую площадь')
         .if((val, { req }) => val)
         .isFloat({ min: 0.1 }),
       check('livingAreaTo', 'Укажите корректную жилую площадь')
-        .if((val, { req }) => val && req.body.livingAreaFrom)
+        .if((val, { req }) => val && req.query.livingAreaFrom)
         .custom(
           (val, { req }) =>
-            parseFloat(val) >= parseFloat(req.body.livingAreaFrom)
+            parseFloat(val) >= parseFloat(req.query.livingAreaFrom)
         ),
-      check('livingAreaTo', 'Укажите корректную жилую площадь')
-        .if((val, { req }) => val && req.body.totalAreaTo)
-        .custom(
-          (val, { req }) => parseFloat(val) <= parseFloat(req.body.totalAreaTo)
-        ),
+      // check('livingAreaTo', 'Укажите корректную жилую площадь')
+      //   .if((val, { req }) => val && req.query.totalAreaTo)
+      //   .custom(
+      //     (val, { req }) => parseFloat(val) <= parseFloat(req.query.totalAreaTo)
+      //   ),
       check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
         .if((val, { req }) => val)
         .isFloat({
           min: 0.1
         }),
+      // check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
+      //   .if((val, { req }) => val && req.query.totalAreaFrom)
+      //   .custom(
+      //     (val, { req }) => parseFloat(val) <= parseFloat(req.query.totalAreaFrom)
+      //   ),
       check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.totalAreaFrom)
+        .if((val, { req }) => val && req.query.totalAreaTo)
+        .custom(
+          (val, { req }) => parseFloat(val) <= parseFloat(req.query.totalAreaTo)
+        ),
+      // check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
+      //   .if((val, { req }) => val && req.query.livingAreaFrom)
+      //   .custom(
+      //     (val, { req }) =>
+      //       parseFloat(val) <= parseFloat(req.query.livingAreaFrom)
+      //   ),
+      check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
+        .if((val, { req }) => val && req.query.livingAreaTo)
         .custom(
           (val, { req }) =>
-            parseFloat(val) <= parseFloat(req.body.totalAreaFrom)
-        ),
-      check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.totalAreaTo)
-        .custom(
-          (val, { req }) => parseFloat(val) <= parseFloat(req.body.totalAreaTo)
-        ),
-      check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.livingAreaFrom)
-        .custom(
-          (val, { req }) =>
-            parseFloat(val) <= parseFloat(req.body.livingAreaFrom)
-        ),
-      check('kitchenAreaFrom', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.livingAreaTo)
-        .custom(
-          (val, { req }) => parseFloat(val) <= parseFloat(req.body.livingAreaTo)
+            parseFloat(val) <= parseFloat(req.query.livingAreaTo)
         ),
       check('kitchenAreaTo', 'Укажите корректную площадь кухни')
         .if((val, { req }) => val)
@@ -215,36 +228,35 @@ router.post(
           min: 0.1
         }),
       check('kitchenAreaTo', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.kitchenAreaFrom)
+        .if((val, { req }) => val && req.query.kitchenAreaFrom)
         .custom(
           (val, { req }) =>
-            parseFloat(val) >= parseFloat(req.body.kitchenAreaFrom)
+            parseFloat(val) >= parseFloat(req.query.kitchenAreaFrom)
         ),
-      check('kitchenAreaTo', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.totalAreaFrom)
-        .custom(
-          (val, { req }) =>
-            parseFloat(val) <= parseFloat(req.body.totalAreaFrom)
-        ),
-      check('kitchenAreaTo', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.totalAreaTo)
-        .custom(
-          (val, { req }) => parseFloat(val) <= parseFloat(req.body.totalAreaTo)
-        ),
-      check('kitchenAreaTo', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.livingAreaFrom)
-        .custom(
-          (val, { req }) =>
-            parseFloat(val) <= parseFloat(req.body.livingAreaFrom)
-        ),
-      check('kitchenAreaTo', 'Укажите корректную площадь кухни')
-        .if((val, { req }) => val && req.body.livingAreaTo)
-        .custom(
-          (val, { req }) => parseFloat(val) <= parseFloat(req.body.livingAreaTo)
-        ),
+      // check('kitchenAreaTo', 'Укажите корректную площадь кухни')
+      //   .if((val, { req }) => val && req.query.totalAreaFrom)
+      //   .custom(
+      //     (val, { req }) => parseFloat(val) <= parseFloat(req.query.totalAreaFrom)
+      //   ),
+      // check('kitchenAreaTo', 'Укажите корректную площадь кухни')
+      //   .if((val, { req }) => val && req.query.totalAreaTo)
+      //   .custom(
+      //     (val, { req }) => parseFloat(val) <= parseFloat(req.query.totalAreaTo)
+      //   ),
+      // check('kitchenAreaTo', 'Укажите корректную площадь кухни')
+      //   .if((val, { req }) => val && req.query.livingAreaFrom)
+      //   .custom(
+      //     (val, { req }) =>
+      //       parseFloat(val) <= parseFloat(req.query.livingAreaFrom)
+      //   ),
+      // check('kitchenAreaTo', 'Укажите корректную площадь кухни')
+      //   .if((val, { req }) => val && req.query.livingAreaTo)
+      //   .custom(
+      //     (val, { req }) => parseFloat(val) <= parseFloat(req.query.livingAreaTo)
+      //   ),
       check('balcony', 'Укажите корректные данные по балкону')
         .if((val, { req }) => val)
-        .isIn(['Не важно', 'Один', 'Два и более']),
+        .isIn(['Не важно', 'Есть', 'Два и более']),
       check('windows', 'Укажите корректные данные по окнам')
         .if((val, { req }) => val)
         .isIn(['Не важно', 'На улицу', 'Во двор', 'На улицу и во двор']),
@@ -265,8 +277,10 @@ router.post(
           min: 1
         }),
       check('priceTo', 'Укажите корректную стоимость квартиры')
-        .if((val, { req }) => val && req.body.priceFrom)
-        .custom((val, { req }) => parseInt(val) >= parseInt(req.body.priceFrom))
+        .if((val, { req }) => val && req.query.priceFrom)
+        .custom(
+          (val, { req }) => parseInt(val) >= parseInt(req.query.priceFrom)
+        )
     ]
   ],
   async (req, res) => {
@@ -277,18 +291,27 @@ router.post(
 
     const {
       name,
-      dealType,
       searchType,
-      address,
+      dealType,
+      province,
+      locality,
+      metroDuration,
+      pedestrian,
+      addressDistricts,
+      addressRoutes,
+      addressMetros,
       houseYearFrom,
       houseYearTo,
-      houseType,
+      panel,
+      block,
+      brick,
+      monolithic,
       floorsFrom,
       floorsTo,
       elevator,
       floorFrom,
       floorTo,
-      floorExceptLast,
+      exceptLast,
       roomsNumberFrom,
       roomsNumberTo,
       totalAreaFrom,
@@ -309,9 +332,15 @@ router.post(
 
     search.user = req.user.id;
     if (name) search.name = name;
-    if (dealType) search.dealType = dealType;
     if (searchType) search.searchType = searchType;
-    if (address) search.address = address;
+    if (dealType) search.dealType = dealType;
+    if (province) search.province = province;
+    if (locality) search.locality = locality;
+    if (metroDuration) search.metroDuration = metroDuration;
+    if (pedestrian) search.pedestrian = pedestrian;
+    if (addressDistricts) search.addressDistricts = addressDistricts;
+    if (addressRoutes) search.addressRoutes = addressRoutes;
+    if (adressMetros) search.adressMetros = adressMetros;
     if (houseYearFrom) search.houseYearFrom = houseYearFrom;
     if (houseYearTo) search.houseYearTo = houseYearTo;
     if (houseType) search.houseType = houseType;
@@ -320,7 +349,7 @@ router.post(
     if (elevator) search.elevator = elevator;
     if (floorFrom) search.floorFrom = floorFrom;
     if (floorTo) search.floorTo = floorTo;
-    if (floorExceptLast) search.floorExceptLast = floorExceptLast;
+    if (exceptLast) search.exceptLast = exceptLast;
     if (roomsNumberFrom) search.roomsNumberFrom = roomsNumberFrom;
     if (roomsNumberTo) search.roomsNumberTo = roomsNumberTo;
     if (totalAreaFrom) search.totalAreaFrom = totalAreaFrom;

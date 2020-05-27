@@ -11,6 +11,7 @@ import CreateProposal from '../proposal-forms/CreateProposal';
 import EditProposal from '../proposal-forms/EditProposal';
 import Proposal from '../proposal/Proposal';
 import MyProposals from '../proposals/MyProposals';
+import Proposals from '../proposals/Proposals';
 import Search from '../search/Search';
 
 const Routes = () => {
@@ -21,6 +22,7 @@ const Routes = () => {
         <Route exact path="/login" component={Login} />
         <Route exact path="/register" component={Register} />
         <Route exact path="/proposals/:id" component={Proposal} />
+        <Route exact path="/proposals" component={Proposals} />
         <Route exact path="/search" component={Search} />
         <PrivateRoute exact path="/profile" component={Profile} />
         <PrivateRoute exact path="/edit-profile" component={EditProfile} />
