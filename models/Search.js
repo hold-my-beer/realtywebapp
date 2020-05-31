@@ -50,8 +50,20 @@ const SearchSchema = new mongoose.Schema({
   houseYearTo: {
     type: Number
   },
-  houseType: {
-    type: [String]
+  // houseType: {
+  //   type: [String]
+  // },
+  panel: {
+    type: String
+  },
+  brick: {
+    type: String
+  },
+  block: {
+    type: String
+  },
+  monolithic: {
+    type: String
   },
   floorsFrom: {
     type: Number

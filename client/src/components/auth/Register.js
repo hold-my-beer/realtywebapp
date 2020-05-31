@@ -3,9 +3,17 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { register } from '../../actions/auth';
 import { setAlert } from '../../actions/alert';
+import { addSearch } from '../../actions/search';
 import PropTypes from 'prop-types';
 
-const Register = ({ setAlert, register, isAuthenticated }) => {
+const Register = ({
+  setAlert,
+  register,
+  addSearch,
+  search,
+  proposals,
+  isAuthenticated
+}) => {
   const [formData, setFormData] = useState({
     firstName: '',
     secondName: '',
@@ -26,11 +34,23 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
     if (password !== password2) {
       setAlert('Пароли не совпадают, попробуйте ввести еще раз', 'danger');
     } else {
-      register(firstName, secondName, email, password);
+      await register(firstName, secondName, email, password);
+
+      if (search.postponedSearch) {
+        // console.log('to addSearch');
+        addSearch(
+          search.postponedSearch.data,
+          search.postponedSearch.address,
+          search.postponedSearch.name,
+          search.postponedSearch.searchType
+        );
+      }
     }
   };
 
-  if (isAuthenticated) {
+  if (isAuthenticated && search.postponedSearch) {
+    return <Redirect to="/proposals" />;
+  } else if (isAuthenticated) {
     return <Redirect to="/profile" />;
   }
 
@@ -119,11 +139,18 @@ const Register = ({ setAlert, register, isAuthenticated }) => {
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
   register: PropTypes.func.isRequired,
+  addSearch: PropTypes.func.isRequired,
+  search: PropTypes.object.isRequired,
+  proposals: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool
 };
 
 const mapStateToProps = state => ({
+  search: state.search,
+  proposals: state.proposal.proposals,
   isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(mapStateToProps, { setAlert, register })(Register);
+export default connect(mapStateToProps, { setAlert, register, addSearch })(
+  Register
+);

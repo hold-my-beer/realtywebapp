@@ -12,7 +12,7 @@ const Province = require('../../models/Province');
 // @desc    Get all proposals
 // @access  Public
 router.get('/', async (req, res) => {
-  console.log(req.query);
+  // console.log(req.query);
   try {
     const proposals = await Proposal.find().sort({ date: -1 });
 
@@ -279,7 +279,7 @@ router.get(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    console.log(req.query);
+    // console.log(req.query);
 
     let elevatorArray = [];
     switch (req.query.elevator) {
@@ -725,11 +725,11 @@ router.post(
             };
             newRoute.metros.push({ name: metro });
             newLocality.routes.push(newRoute);
-            console.log(newLocality);
+            // console.log(newLocality);
           }
 
           newProvince.localities.push(newLocality);
-          console.log(newProvince);
+          // console.log(newProvince);
         }
 
         newProvince.save();
@@ -1019,11 +1019,11 @@ router.put(
             };
             newRoute.metros.push({ name: metro });
             newLocality.routes.push(newRoute);
-            console.log(newLocality);
+            // console.log(newLocality);
           }
 
           newProvince.localities.push(newLocality);
-          console.log(newProvince);
+          // console.log(newProvince);
         }
 
         newProvince.save();

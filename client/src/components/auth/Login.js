@@ -2,9 +2,10 @@ import React, { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import { login } from '../../actions/auth';
+import { addSearch } from '../../actions/search';
 import PropTypes from 'prop-types';
 
-const Login = ({ login, isAuthenticated }) => {
+const Login = ({ login, addSearch, search, proposals, isAuthenticated }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -19,10 +20,22 @@ const Login = ({ login, isAuthenticated }) => {
   const onSubmit = async e => {
     e.preventDefault();
 
-    login(email, password);
+    await login(email, password);
+
+    if (search.postponedSearch) {
+      // console.log('to addSearch');
+      addSearch(
+        search.postponedSearch.data,
+        search.postponedSearch.address,
+        search.postponedSearch.name,
+        search.postponedSearch.searchType
+      );
+    }
   };
 
-  if (isAuthenticated) {
+  if (isAuthenticated && search.postponedSearch) {
+    return <Redirect to="/proposals" />;
+  } else if (isAuthenticated) {
     return <Redirect to="/profile" />;
   }
 
@@ -65,11 +78,16 @@ const Login = ({ login, isAuthenticated }) => {
 
 Login.propTypes = {
   login: PropTypes.func.isRequired,
+  addSearch: PropTypes.func.isRequired,
+  search: PropTypes.object.isRequired,
+  proposals: PropTypes.array.isRequired,
   isAuthenticated: PropTypes.bool
 };
 
 const mapStateToProps = state => ({
+  search: state.search,
+  proposals: state.proposal.proposals,
   isAuthenticated: state.auth.isAuthenticated
 });
 
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { login, addSearch })(Login);

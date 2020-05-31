@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getProvinces } from '../../actions/province';
 import { getProposalsByParameters } from '../../actions/proposal';
-import { addSearch } from '../../actions/search';
+import { addSearch, postponeSearch } from '../../actions/search';
 
 import Spinner from '../layout/Spinner';
 
@@ -12,7 +12,9 @@ const Search = ({
   getProvinces,
   getProposalsByParameters,
   addSearch,
+  postponeSearch,
   province: { provinces },
+  auth: { isAuthenticated },
   history
 }) => {
   const [searchType, setSearchType] = useState('');
@@ -407,12 +409,31 @@ const Search = ({
     // console.log('in Submit');
     e.preventDefault();
 
-    if (saveSearch) {
-      getProposalsByParameters(formData, address, history, true);
-      addSearch(formData, address, searchData, searchType, history);
-    } else {
+    // let search = formData;
+    // search.address = address;
+    // search.name = searchData.searchName;
+    // search.searchType = searchType;
+
+    if (!saveSearch) {
       getProposalsByParameters(formData, address, history);
+    } else if (isAuthenticated) {
+      getProposalsByParameters(formData, address, history);
+      addSearch(formData, address, searchData.searchName, searchType);
+      // addSearch(search);
+    } else {
+      getProposalsByParameters(formData, address, history, true);
+      // addSearch(search, true);
+      postponeSearch(formData, address, searchData.searchName, searchType);
     }
+    // if (saveSearch && !isAuthenticated) {
+    //   getProposalsByParameters(formData, address);
+    //   addSearch(formData, address, searchData, searchType, history);
+    // } else if (saveSearch && isAuthenticated) {
+    //   getProposalsByParameters(formData, address, history);
+    //   addSearch(formData, address, searchData, searchType);
+    // } else {
+    //   getProposalsByParameters(formData, address, history);
+    // }
   };
 
   return (
@@ -1125,15 +1146,19 @@ Search.propTypes = {
   getProvinces: PropTypes.func.isRequired,
   getProposalsByParameters: PropTypes.func.isRequired,
   addSearch: PropTypes.func.isRequired,
-  province: PropTypes.object.isRequired
+  postponeSearch: PropTypes.func.isRequired,
+  province: PropTypes.object.isRequired,
+  isAuthenticated: PropTypes.bool
 };
 
 const mapStateToProps = state => ({
-  province: state.province
+  province: state.province,
+  auth: state.auth
 });
 
 export default connect(mapStateToProps, {
   getProvinces,
   getProposalsByParameters,
-  addSearch
+  addSearch,
+  postponeSearch
 })(withRouter(Search));

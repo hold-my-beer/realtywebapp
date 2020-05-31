@@ -39,7 +39,8 @@ export const getCurrentUserProposals = () => async dispatch => {
 export const getProposalsByParameters = (
   formData,
   address,
-  history
+  history,
+  needLogin = false
 ) => async dispatch => {
   // const {
   //   dealType,
@@ -118,7 +119,11 @@ export const getProposalsByParameters = (
       payload: res.data
     });
 
-    history.push('/proposals');
+    if (!needLogin) {
+      history.push('/proposals');
+    } else {
+      history.push('/login');
+    }
   } catch (err) {
     const errors = err.response.data.errors;
 

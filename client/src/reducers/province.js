@@ -1,5 +1,6 @@
 import {
   GET_PROVINCES,
+  CLEAR_PROVINCE,
   PROVINCE_ERROR,
   SET_PROVINCE_LOADING
 } from '../actions/types';
@@ -17,6 +18,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         provinces: payload,
+        loading: false
+      };
+    case CLEAR_PROVINCE:
+      return {
+        ...state,
+        provinces: [],
         loading: false
       };
     case PROVINCE_ERROR:
