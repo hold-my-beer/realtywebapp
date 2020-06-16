@@ -164,7 +164,10 @@ const Proposal = ({
                 className="btn btn-primary btn-block"
                 value="Сохранить в понравившиеся"
               />
-              <Link to="./profile.html" className="btn btn-dark btn-block">
+              <Link
+                to={`/profile/${proposal.user}`}
+                className="btn btn-dark btn-block"
+              >
                 Контакты продавца
               </Link>
             </Fragment>

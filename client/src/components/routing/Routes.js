@@ -16,6 +16,7 @@ import CreateSearch from '../search-forms/CreateSearch';
 import MySearches from '../search/MySearches';
 import Search from '../search/Search';
 import EditSearch from '../search-forms/EditSearch';
+import SellerProfile from '../profile/SellerProfile';
 
 const Routes = () => {
   return (
@@ -27,6 +28,7 @@ const Routes = () => {
         <Route exact path="/proposals/:id" component={Proposal} />
         <Route exact path="/proposals" component={Proposals} />
         <Route exact path="/create-search" component={CreateSearch} />
+        <Route exact path="/profile/:userId" component={SellerProfile} />
         <PrivateRoute exact path="/profile" component={Profile} />
         <PrivateRoute exact path="/edit-profile" component={EditProfile} />
         <PrivateRoute

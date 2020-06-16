@@ -27,6 +27,30 @@ export const getProfile = () => async dispatch => {
   }
 };
 
+// Get profile by userId
+export const getProfileByUserId = userId => async dispatch => {
+  dispatch(setProfileLoading());
+
+  try {
+    const res = await axios.get(`/api/profile/${userId}`);
+
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data
+    });
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: PROFILE_ERROR
+    });
+  }
+};
+
 // Upload profile photo
 export const uploadProfilePhoto = file => async dispatch => {
   dispatch(setProfileLoading());
