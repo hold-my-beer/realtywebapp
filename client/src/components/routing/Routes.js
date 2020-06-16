@@ -12,7 +12,10 @@ import EditProposal from '../proposal-forms/EditProposal';
 import Proposal from '../proposal/Proposal';
 import MyProposals from '../proposals/MyProposals';
 import Proposals from '../proposals/Proposals';
+import CreateSearch from '../search-forms/CreateSearch';
+import MySearches from '../search/MySearches';
 import Search from '../search/Search';
+import EditSearch from '../search-forms/EditSearch';
 
 const Routes = () => {
   return (
@@ -23,7 +26,7 @@ const Routes = () => {
         <Route exact path="/register" component={Register} />
         <Route exact path="/proposals/:id" component={Proposal} />
         <Route exact path="/proposals" component={Proposals} />
-        <Route exact path="/search" component={Search} />
+        <Route exact path="/create-search" component={CreateSearch} />
         <PrivateRoute exact path="/profile" component={Profile} />
         <PrivateRoute exact path="/edit-profile" component={EditProfile} />
         <PrivateRoute
@@ -37,6 +40,9 @@ const Routes = () => {
           component={EditProposal}
         />
         <PrivateRoute exact path="/my-proposals" component={MyProposals} />
+        <PrivateRoute exact path="/my-searches" component={MySearches} />
+        <PrivateRoute exact path="/searches/:id" component={Search} />
+        <PrivateRoute exact path="/edit-search/:id" component={EditSearch} />
       </Switch>
     </div>
   );

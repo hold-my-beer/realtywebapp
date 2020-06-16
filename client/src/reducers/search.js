@@ -1,7 +1,10 @@
 import {
   ADD_SEARCH,
+  EDIT_SEARCH,
+  GET_SEARCH,
   POSTPONE_SEARCH,
   GET_SEARCHES,
+  DELETE_SEARCH,
   CLEAR_SEARCH,
   SEARCH_ERROR,
   SET_SEARCH_LOADING
@@ -19,6 +22,8 @@ export default function (state = initialState, action) {
 
   switch (type) {
     case ADD_SEARCH:
+    case EDIT_SEARCH:
+    case GET_SEARCH:
       return {
         ...state,
         search: payload,
@@ -35,6 +40,12 @@ export default function (state = initialState, action) {
       return {
         ...state,
         searches: payload,
+        loading: false
+      };
+    case DELETE_SEARCH:
+      return {
+        ...state,
+        search: null,
         loading: false
       };
     case CLEAR_SEARCH:
@@ -55,7 +66,7 @@ export default function (state = initialState, action) {
         ...state,
         search: null,
         postponedSearch: null,
-        searches: null,
+        searches: [],
         loading: false
       };
     default:

@@ -16,12 +16,12 @@ const Navbar = ({ logout, isAuthenticated }) => {
   const guestLinks = (
     <ul className="medium" onClick={() => toggleMenu()}>
       <li className="my-2">
-        <Link to="/search">
+        <Link to="/create-search">
           <i className="fas fa-shopping-cart"></i> Купить
         </Link>
       </li>
       <li className="my-2">
-        <Link to="/search">
+        <Link to="/create-search">
           <i className="far fa-calendar-alt"></i> Снять
         </Link>
       </li>
@@ -46,12 +46,12 @@ const Navbar = ({ logout, isAuthenticated }) => {
   const authLinks = (
     <ul className="medium" onClick={() => toggleMenu()}>
       <li className="my-2">
-        <Link to="/search">
+        <Link to="/create-search">
           <i className="fas fa-shopping-cart"></i> Купить
         </Link>
       </li>
       <li className="my-2">
-        <Link to="/search">
+        <Link to="/create-search">
           <i className="far fa-calendar-alt"></i> Снять
         </Link>
       </li>

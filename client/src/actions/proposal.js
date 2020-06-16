@@ -4,9 +4,9 @@ import {
   GET_PROPOSALS,
   PROPOSAL_ERROR,
   SET_PROPOSAL_LOADING,
-  DELETE_PROPOSAL,
-  SEARCH_ERROR,
-  GET_SEARCH
+  DELETE_PROPOSAL
+  // SEARCH_ERROR,
+  // GET_SEARCH
 } from './types';
 import { setAlert } from './alert';
 import { CLOUDINARY_URL, CLOUDINARY_PRESET } from './consts';

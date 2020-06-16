@@ -15,7 +15,7 @@ const Showcase = ({ isAuthenticated }) => {
           <div className="showcase-inner">
             <h1 className="large">Купить</h1>
             <p className="lead">Найти и купить жилье вашей мечты</p>
-            <Link to="/search" className="btn btn-primary">
+            <Link to="/create-search" className="btn btn-primary">
               Найти
             </Link>
           </div>
@@ -26,7 +26,7 @@ const Showcase = ({ isAuthenticated }) => {
           <div className="showcase-inner">
             <h1 className="large">Снять</h1>
             <p className="lead">Найти и снять самое удобное жилье</p>
-            <Link to="/search" className="btn btn-primary">
+            <Link to="/create-search" className="btn btn-primary">
               Найти
             </Link>
           </div>

@@ -1,10 +1,13 @@
 import axios from 'axios';
 import {
   GET_SEARCHES,
+  GET_SEARCH,
   ADD_SEARCH,
+  EDIT_SEARCH,
   POSTPONE_SEARCH,
   SEARCH_ERROR,
-  SET_SEARCH_LOADING
+  SET_SEARCH_LOADING,
+  DELETE_SEARCH
 } from './types';
 import { setAlert } from './alert';
 
@@ -32,15 +35,35 @@ export const getSearches = () => async dispatch => {
   }
 };
 
+// Get user search by id
+export const getSearchById = id => async dispatch => {
+  dispatch(setSearchLoading());
+  try {
+    const res = await axios.get(`/api/search/${id}`);
+
+    dispatch({
+      type: GET_SEARCH,
+      payload: res.data
+    });
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: SEARCH_ERROR
+    });
+  }
+};
+
 // Add new search parameters
 export const addSearch = (
   formData,
   address,
   searchName,
   searchType
-  // search,
-  // history = null
-  // postponeSearch = false
 ) => async dispatch => {
   dispatch(setSearchLoading());
 
@@ -50,7 +73,6 @@ export const addSearch = (
   search.address = address;
   search.name = searchName;
   search.searchType = searchType;
-  // console.log(search);
 
   const config = {
     headers: {
@@ -65,10 +87,51 @@ export const addSearch = (
       type: ADD_SEARCH,
       payload: res.data
     });
+  } catch (err) {
+    const errors = err.response.data.errors;
 
-    // if (history) {
-    //   history.push('/login');
-    // }
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: SEARCH_ERROR
+    });
+  }
+};
+
+// Edit search parameters
+export const editSearch = (
+  id,
+  formData,
+  address,
+  searchName,
+  searchType
+) => async dispatch => {
+  dispatch(setSearchLoading());
+
+  let search = {};
+
+  search.data = formData;
+  search.address = address;
+  search.name = searchName;
+  search.searchType = searchType;
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  try {
+    const res = await axios.put(`/api/search/${id}`, search, config);
+
+    dispatch(setAlert('Критерии поиска успешно изменены', 'success'));
+
+    dispatch({
+      type: EDIT_SEARCH,
+      payload: res.data
+    });
   } catch (err) {
     const errors = err.response.data.errors;
 
@@ -89,62 +152,41 @@ export const postponeSearch = (
   searchName,
   searchType
 ) => async dispatch => {
-  // dispatch(setSearchLoading());
-
   let search = {};
   search.data = formData;
   search.address = address;
   search.name = searchName;
   search.searchType = searchType;
-  // let search = {};
-
-  // for (let item in formData) {
-  //   // params.set(item.toString(), formData[item]);
-  //   search[item.toString()] = formData[item];
-  // }
-
-  // for (let item in address) {
-  //   // params.set(item.toString(), formData[item]);
-  //   search[item.toString()] = address[item];
-  // }
-
-  // search.name = searchData.searchName;
-  // search.searchType = searchType;
 
   dispatch({
-    // type: ADD_SEARCH,
     type: POSTPONE_SEARCH,
     payload: search
   });
+};
 
-  // const config = {
-  //   headers: {
-  //     'Content-Type': 'application/json'
-  //   }
-  // };
+// Delete search
+export const deleteSearch = (id, history) => async dispatch => {
+  try {
+    await axios.delete(`/api/search/${id}`);
 
-  // try {
-  //   const res = await axios.post('/api/search', search, config);
+    dispatch({
+      type: DELETE_SEARCH
+    });
 
-  //   dispatch({
-  //     type: ADD_SEARCH,
-  //     payload: res.data
-  //   });
+    dispatch(setAlert('Поиск успешно удален', 'success'));
 
-  //   // if (history) {
-  //   //   history.push('/login');
-  //   // }
-  // } catch (err) {
-  //   const errors = err.response.data.errors;
+    history.push('/my-searches');
+  } catch (err) {
+    const errors = err.response.data.errors;
 
-  //   if (errors) {
-  //     errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-  //   }
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
 
-  //   dispatch({
-  //     type: SEARCH_ERROR
-  //   });
-  // }
+    dispatch({
+      type: SEARCH_ERROR
+    });
+  }
 };
 
 // Set proposal loading
