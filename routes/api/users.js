@@ -20,13 +20,12 @@ router.get('/', (req, res) => res.send('users'));
 router.post(
   '/',
   [
-    check('firstName', 'Пожалуйста, укажите ваше имя')
-      .not()
-      .isEmpty(),
+    check('firstName', 'Пожалуйста, укажите ваше имя').not().isEmpty(),
     check('email', 'Введенные данные не являются email').isEmail(),
     check('password', 'Пароль должен содержать не менее 6 символов').isLength({
       min: 6
-    })
+    }),
+    check('phoneNumber', 'Пожалуйста, укажите номер телефона').not().isEmpty()
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -34,7 +33,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { firstName, secondName, email, password } = req.body;
+    const { firstName, secondName, email, password, phoneNumber } = req.body;
 
     try {
       // See if user exists
@@ -61,7 +60,8 @@ router.post(
         userPhoto: {
           photoID: '',
           photoURL: ''
-        }
+        },
+        phoneNumber
       });
       await profile.save();
 

@@ -6,6 +6,8 @@ import { setAlert } from '../../actions/alert';
 import { addSearch } from '../../actions/search';
 import PropTypes from 'prop-types';
 
+import NumberFormat from 'react-number-format';
+
 const Register = ({
   setAlert,
   register,
@@ -19,10 +21,18 @@ const Register = ({
     secondName: '',
     email: '',
     password: '',
-    password2: ''
+    password2: '',
+    phoneNumber: ''
   });
 
-  const { firstName, secondName, email, password, password2 } = formData;
+  const {
+    firstName,
+    secondName,
+    email,
+    password,
+    password2,
+    phoneNumber
+  } = formData;
 
   const onChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,7 +44,7 @@ const Register = ({
     if (password !== password2) {
       setAlert('Пароли не совпадают, попробуйте ввести еще раз', 'danger');
     } else {
-      await register(firstName, secondName, email, password);
+      await register(firstName, secondName, email, password, phoneNumber);
 
       if (search.postponedSearch) {
         // console.log('to addSearch');
@@ -118,6 +128,20 @@ const Register = ({
             name="password2"
             value={password2}
             placeholder="Введите пароль повторно..."
+            onChange={e => onChange(e)}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="phoneNumber">Номер телефона*</label>
+          <NumberFormat
+            format="+7 (###) ###-####"
+            allowEmptyFormatting
+            mask="_"
+            id="phoneNumber"
+            name="phoneNumber"
+            value={phoneNumber}
+            placeholder="Укажите номер вашего телефона..."
             onChange={e => onChange(e)}
             required
           />

@@ -16,7 +16,8 @@ const ProfileSchema = new mongoose.Schema({
     type: Date
   },
   phoneNumber: {
-    type: String
+    type: String,
+    required: true
   },
   userPhoto: {
     photoID: {
