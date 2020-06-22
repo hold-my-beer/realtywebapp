@@ -1,6 +1,7 @@
 import {
   GET_PROPOSAL,
   GET_PROPOSALS,
+  GET_FAVORITES,
   DELETE_PROPOSAL,
   CLEAR_PROPOSAL,
   PROPOSAL_ERROR,
@@ -24,6 +25,7 @@ export default function (state = initialState, action) {
         loading: false
       };
     case GET_PROPOSALS:
+    case GET_FAVORITES:
       return {
         ...state,
         proposals: payload,

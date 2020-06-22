@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getProfileByUserId } from '../../actions/profile';
 import PropTypes from 'prop-types';
@@ -12,8 +12,9 @@ import 'moment/locale/ru';
 
 const SellerProfile = ({
   getProfileByUserId,
-  profile: { profile, loading },
-  match
+  profile: { sellerProfile, loading },
+  match,
+  history
 }) => {
   useEffect(() => {
     getProfileByUserId(match.params.userId);
@@ -21,18 +22,21 @@ const SellerProfile = ({
 
   return (
     <Fragment>
-      {profile === null || loading ? (
+      {sellerProfile === null || loading ? (
         <Spinner />
       ) : (
         <Fragment>
+          <button className="btn btn-light" onClick={history.goBack}>
+            Назад
+          </button>
           <h1 className="text-primary text-center my-1">Профиль продавца</h1>
           <div className="profile">
             <div className="profile-top">
               <div className="profile-photo">
                 <img
                   src={
-                    profile.userPhoto.photoURL
-                      ? profile.userPhoto.photoURL
+                    sellerProfile.userPhoto.photoURL
+                      ? sellerProfile.userPhoto.photoURL
                       : defaultAvatar
                   }
                   alt=""
@@ -40,12 +44,12 @@ const SellerProfile = ({
               </div>
               <div className="profile-personal">
                 <h2 className="text-primary">
-                  {profile.firstName} {profile.secondName}
+                  {sellerProfile.firstName} {sellerProfile.secondName}
                 </h2>
-                {profile.dateOfBirth ? (
+                {sellerProfile.dateOfBirth ? (
                   <h3>
                     <Moment fromNow ago locale="ru">
-                      {profile.dateOfBirth}
+                      {sellerProfile.dateOfBirth}
                     </Moment>
                   </h3>
                 ) : (
@@ -57,9 +61,9 @@ const SellerProfile = ({
                   <strong>Email: </strong>{' '}
                   {auth.user !== null && auth.user.email}
                 </p> */}
-                {profile.phoneNumber ? (
+                {sellerProfile.phoneNumber ? (
                   <p>
-                    <strong>Телефон: </strong> {profile.phoneNumber}
+                    <strong>Телефон: </strong> {sellerProfile.phoneNumber}
                   </p>
                 ) : (
                   ''
@@ -102,4 +106,6 @@ const mapStateToProps = state => ({
   profile: state.profile
 });
 
-export default connect(mapStateToProps, { getProfileByUserId })(SellerProfile);
+export default connect(mapStateToProps, { getProfileByUserId })(
+  withRouter(SellerProfile)
+);

@@ -2,6 +2,7 @@ import axios from 'axios';
 import {
   GET_PROPOSAL,
   GET_PROPOSALS,
+  GET_FAVORITES,
   PROPOSAL_ERROR,
   SET_PROPOSAL_LOADING,
   DELETE_PROPOSAL
@@ -297,6 +298,33 @@ export const deleteProposal = (id, history) => async dispatch => {
 
     history.push('/my-proposals');
   } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: PROPOSAL_ERROR
+    });
+  }
+};
+
+// Get user favorites
+export const getFavorites = () => async dispatch => {
+  dispatch(setProposalLoading());
+
+  // console.log('in get favorites action');
+
+  try {
+    const res = await axios.get('/api/proposals/favorites');
+
+    dispatch({
+      type: GET_FAVORITES,
+      payload: res.data
+    });
+  } catch (err) {
+    console.log(err.response);
     const errors = err.response.data.errors;
 
     if (errors) {

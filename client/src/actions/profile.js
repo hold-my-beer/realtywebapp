@@ -1,5 +1,13 @@
 import axios from 'axios';
-import { GET_PROFILE, PROFILE_ERROR, SET_PROFILE_LOADING } from './types';
+import {
+  GET_PROFILE,
+  GET_SELLER_PROFILE,
+  ADD_TO_FAVORITES,
+  DELETE_FROM_FAVORITES,
+  PROFILE_ERROR,
+  FAVORITES_ERROR,
+  SET_PROFILE_LOADING
+} from './types';
 import { setAlert } from './alert';
 import { CLOUDINARY_URL, CLOUDINARY_PRESET } from './consts';
 
@@ -35,7 +43,7 @@ export const getProfileByUserId = userId => async dispatch => {
     const res = await axios.get(`/api/profile/${userId}`);
 
     dispatch({
-      type: GET_PROFILE,
+      type: GET_SELLER_PROFILE,
       payload: res.data
     });
   } catch (err) {
@@ -140,6 +148,72 @@ export const updateProfile = (formData, history) => async dispatch => {
     });
 
     history.push('/profile');
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: PROFILE_ERROR
+    });
+  }
+};
+
+// Add proposal to user favorites
+export const addToFavorites = proposalId => async dispatch => {
+  dispatch(setProfileLoading());
+
+  const body = JSON.stringify({ proposalId });
+
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  try {
+    // console.log(proposalId);
+    const res = await axios.post('/api/profile/favorites', body, config);
+
+    dispatch({
+      type: ADD_TO_FAVORITES,
+      payload: res.data
+    });
+  } catch (err) {
+    // console.log(err.response.data.msg);
+    if (err.response.data.msg === 'Объект уже добавлен в избранное') {
+      dispatch(setAlert(err.response.data.msg, 'danger'));
+
+      dispatch({
+        type: FAVORITES_ERROR
+      });
+    } else {
+      const errors = err.response.data.errors;
+
+      if (errors) {
+        errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      }
+
+      dispatch({
+        type: PROFILE_ERROR
+      });
+    }
+  }
+};
+
+// Remove proposal from user favorites
+export const deleteFromFavorites = proposalId => async dispatch => {
+  dispatch(setProfileLoading());
+
+  try {
+    const res = await axios.delete(`/api/profile/favorites/${proposalId}`);
+
+    dispatch({
+      type: DELETE_FROM_FAVORITES,
+      payload: res.data
+    });
   } catch (err) {
     const errors = err.response.data.errors;
 

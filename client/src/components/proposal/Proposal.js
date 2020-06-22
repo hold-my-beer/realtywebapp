@@ -3,6 +3,7 @@ import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getProposalById, deleteProposal } from '../../actions/proposal';
+import { addToFavorites, deleteFromFavorites } from '../../actions/profile';
 
 import Spinner from '../layout/Spinner';
 import NumberFormat from 'react-number-format';
@@ -12,7 +13,10 @@ import ProposalMap from './ProposalMap';
 const Proposal = ({
   getProposalById,
   deleteProposal,
+  addToFavorites,
+  deleteFromFavorites,
   proposal: { proposal, loading },
+  profile,
   auth,
   match,
   history
@@ -159,11 +163,37 @@ const Proposal = ({
             </Fragment>
           ) : (
             <Fragment>
-              <input
+              {/* <input
                 type="submit"
                 className="btn btn-primary btn-block"
-                value="Сохранить в понравившиеся"
-              />
+                value="Сохранить в избранное"
+              /> */}
+              {profile.profile !== null &&
+                auth !== null &&
+                auth.isAuthenticated &&
+                auth.user._id !== proposal.user &&
+                (profile.profile.favorites.includes(proposal._id) ? (
+                  <button
+                    className="btn btn-danger btn-block"
+                    onClick={e => deleteFromFavorites(proposal._id)}
+                  >
+                    <i className="fas fa-heart"></i>{' '}
+                    {profile.profile.favorites.length !== 0 &&
+                      profile.profile.favorites.length}{' '}
+                    Удалить из избранного
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-danger btn-block"
+                    onClick={e => addToFavorites(proposal._id)}
+                  >
+                    <i className="fas fa-heart"></i>{' '}
+                    {profile.profile.favorites.length !== 0 &&
+                      profile.profile.favorites.length}{' '}
+                    Сохранить в избранное
+                  </button>
+                ))}
+
               <Link
                 to={`/profile/${proposal.user}`}
                 className="btn btn-dark btn-block"
@@ -181,15 +211,22 @@ const Proposal = ({
 Proposal.propTypes = {
   getProposalById: PropTypes.func.isRequired,
   deleteProposal: PropTypes.func.isRequired,
+  addToFavorites: PropTypes.func.isRequired,
+  deleteFromFavorites: PropTypes.func.isRequired,
   proposal: PropTypes.object.isRequired,
+  profile: PropTypes.object,
   auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   proposal: state.proposal,
+  profile: state.profile,
   auth: state.auth
 });
 
-export default connect(mapStateToProps, { getProposalById, deleteProposal })(
-  withRouter(Proposal)
-);
+export default connect(mapStateToProps, {
+  getProposalById,
+  deleteProposal,
+  addToFavorites,
+  deleteFromFavorites
+})(withRouter(Proposal));

@@ -27,6 +27,12 @@ const ProfileSchema = new mongoose.Schema({
       type: String
     }
   },
+  favorites: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'proposal'
+    }
+  ],
   date: {
     type: Date,
     default: Date.now

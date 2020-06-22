@@ -77,6 +77,9 @@ const Profile = ({ getProfile, profile: { profile, loading }, auth }) => {
               <Link to="/my-searches" className="btn btn-dark btn-block">
                 Мои поиски
               </Link>
+              <Link to="/my-favorites" className="btn btn-danger btn-block">
+                Мое избранное
+              </Link>
               <Link to="#" className="btn btn-danger btn-block">
                 Удалить аккаунт
               </Link>

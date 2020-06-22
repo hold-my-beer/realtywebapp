@@ -12,6 +12,7 @@ import EditProposal from '../proposal-forms/EditProposal';
 import Proposal from '../proposal/Proposal';
 import MyProposals from '../proposals/MyProposals';
 import Proposals from '../proposals/Proposals';
+import MyFavorites from '../proposals/MyFavorites';
 import CreateSearch from '../search-forms/CreateSearch';
 import MySearches from '../search/MySearches';
 import Search from '../search/Search';
@@ -42,6 +43,7 @@ const Routes = () => {
           component={EditProposal}
         />
         <PrivateRoute exact path="/my-proposals" component={MyProposals} />
+        <PrivateRoute exact path="/my-favorites" component={MyFavorites} />
         <PrivateRoute exact path="/my-searches" component={MySearches} />
         <PrivateRoute exact path="/searches/:id" component={Search} />
         <PrivateRoute exact path="/edit-search/:id" component={EditSearch} />

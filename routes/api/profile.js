@@ -195,4 +195,70 @@ router.delete('/', auth, async (req, res) => {
   }
 });
 
+// @route   POST api/profile/favorites
+// @desc    Add proposal to user favorites
+// @access  Private
+router.post('/favorites', auth, async (req, res) => {
+  // console.log(req);
+  const { proposalId } = req.body;
+  //console.log(proposalId);
+
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    if (!profile) {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    if (profile.favorites.includes(proposalId)) {
+      return res.status(400).json({ msg: 'Объект уже добавлен в избранное' });
+    } else {
+      profile.favorites.push(proposalId);
+    }
+
+    await profile.save();
+    return res.json(profile);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
+
+// @route   DELETE api/profile/favorites/:proposalId
+// @desc    Remove proposal from user favorites
+// @access  Private
+router.delete('/favorites/:proposalId', auth, async (req, res) => {
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    if (!profile) {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    const removeIndex = profile.favorites.indexOf(req.params.proposalId);
+
+    if (removeIndex === -1) {
+      return res
+        .status(404)
+        .json({ msg: 'Предложение не найдено в избранном' });
+    } else {
+      profile.favorites.splice(removeIndex, 1);
+    }
+
+    await profile.save();
+    return res.json(profile);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
+
 module.exports = router;

@@ -532,6 +532,38 @@ router.get(
   }
 );
 
+// @route   GET api/proposals/favorites
+// @desc    Get user favorites
+// @access  Private
+router.get('/favorites', auth, async (req, res) => {
+  // console.log('in get favorites');
+  try {
+    let profile = await Profile.findOne({ user: req.user.id });
+
+    if (!profile) {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    // console.log(profile);
+
+    const proposals = [];
+
+    for (const favorite of profile.favorites) {
+      // console.log(favorite);
+      proposals.push(await Proposal.findById(favorite));
+    }
+
+    return res.json(proposals);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Профиль не найден' });
+    }
+
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
+
 // @route   GET api/proposals/:id
 // @desc    Get proposal by id
 // @access  Public
