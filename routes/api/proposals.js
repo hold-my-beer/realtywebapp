@@ -55,7 +55,6 @@ router.get('/mine', auth, async (req, res) => {
 // @desc    Get proposal by search criteria
 // @access  Public
 router.get(
-  // '/:dealType/:address/:houseYearFrom/:houseYearTo/:panel/:block/:brick/:monolithic/:floorsFrom/:floorsTo/:elevator/:floorFrom/:floorTo/:floorExceptLast/:roomsNumberFrom/:roomsNumberTo/:totalAreaFrom/:totalAreaTo/:livingAreaFrom/:livingAreaTo/:kitchenAreaFrom/:kitchenAreaTo/:balcony/:windows/:cooker/:bathroom/:priceFrom/:priceTo',
   '/search',
   [
     check('dealType', 'Укажите корректный тип сделки').isIn([
@@ -536,7 +535,6 @@ router.get(
 // @desc    Get user favorites
 // @access  Private
 router.get('/favorites', auth, async (req, res) => {
-  // console.log('in get favorites');
   try {
     let profile = await Profile.findOne({ user: req.user.id });
 
@@ -544,14 +542,13 @@ router.get('/favorites', auth, async (req, res) => {
       return res.status(404).json({ msg: 'Профиль не найден' });
     }
 
-    // console.log(profile);
+    // const proposals = [];
 
-    const proposals = [];
+    // for (const favorite of profile.favorites) {
+    //   proposals.push(await Proposal.findById(favorite));
+    // }
 
-    for (const favorite of profile.favorites) {
-      // console.log(favorite);
-      proposals.push(await Proposal.findById(favorite));
-    }
+    const proposals = await Proposal.find({ _id: { $in: profile.favorites } });
 
     return res.json(proposals);
   } catch (err) {
