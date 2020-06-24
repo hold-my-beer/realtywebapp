@@ -2,6 +2,8 @@ import axios from 'axios';
 import {
   GET_PROPOSAL,
   GET_PROPOSALS,
+  ACTIVATE_PROPOSAL,
+  DEACTIVATE_PROPOSAL,
   GET_FAVORITES,
   PROPOSAL_ERROR,
   SET_PROPOSAL_LOADING,
@@ -24,11 +26,12 @@ export const getCurrentUserProposals = () => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
+    console.error(err);
 
     dispatch({
       type: PROPOSAL_ERROR
@@ -281,6 +284,60 @@ export const uploadProposalPhotos = async files => {
   }
 
   return proposalPhotos;
+};
+
+// Activate proposal
+export const activateProposal = (id, history) => async dispatch => {
+  dispatch(setProposalLoading());
+
+  try {
+    await axios.put(`/api/proposals/activate/${id}`);
+
+    dispatch({
+      type: ACTIVATE_PROPOSAL
+    });
+
+    dispatch(setAlert('Ваше предложение опубликовано повторно', 'success'));
+
+    history.push('/my-proposals');
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: PROPOSAL_ERROR
+    });
+  }
+};
+
+// Deactivate proposal
+export const deactivateProposal = (id, history) => async dispatch => {
+  dispatch(setProposalLoading());
+
+  try {
+    await axios.put(`/api/proposals/deactivate/${id}`);
+
+    dispatch({
+      type: DEACTIVATE_PROPOSAL
+    });
+
+    dispatch(setAlert('Ваше предложение снято с публикации', 'success'));
+
+    history.push('/my-proposals');
+  } catch (err) {
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+
+    dispatch({
+      type: PROPOSAL_ERROR
+    });
+  }
 };
 
 // Delete proposal

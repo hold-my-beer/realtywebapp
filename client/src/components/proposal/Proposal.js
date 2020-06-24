@@ -2,7 +2,12 @@ import React, { Fragment, useEffect } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getProposalById, deleteProposal } from '../../actions/proposal';
+import {
+  getProposalById,
+  activateProposal,
+  deactivateProposal,
+  deleteProposal
+} from '../../actions/proposal';
 import { addToFavorites, deleteFromFavorites } from '../../actions/profile';
 
 import Spinner from '../layout/Spinner';
@@ -12,6 +17,8 @@ import ProposalMap from './ProposalMap';
 
 const Proposal = ({
   getProposalById,
+  activateProposal,
+  deactivateProposal,
   deleteProposal,
   addToFavorites,
   deleteFromFavorites,
@@ -154,12 +161,27 @@ const Proposal = ({
               >
                 Редактировать предложение
               </Link>
-              <button
+              {proposal.isActive ? (
+                <button
+                  className="btn btn-secondary btn-block"
+                  onClick={e => deactivateProposal(proposal._id, history)}
+                >
+                  Снять с публикации
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary btn-block"
+                  onClick={e => activateProposal(proposal._id, history)}
+                >
+                  Разместить повторно
+                </button>
+              )}
+              {/* <button
                 className="btn btn-danger btn-block"
                 onClick={() => deleteProposal(proposal._id, history)}
               >
                 Удалить предложение
-              </button>
+              </button> */}
             </Fragment>
           ) : (
             <Fragment>
@@ -210,6 +232,8 @@ const Proposal = ({
 
 Proposal.propTypes = {
   getProposalById: PropTypes.func.isRequired,
+  activateProposal: PropTypes.func.isRequired,
+  deactivateProposal: PropTypes.func.isRequired,
   deleteProposal: PropTypes.func.isRequired,
   addToFavorites: PropTypes.func.isRequired,
   deleteFromFavorites: PropTypes.func.isRequired,
@@ -226,6 +250,8 @@ const mapStateToProps = state => ({
 
 export default connect(mapStateToProps, {
   getProposalById,
+  activateProposal,
+  deactivateProposal,
   deleteProposal,
   addToFavorites,
   deleteFromFavorites

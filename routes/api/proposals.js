@@ -28,10 +28,11 @@ router.get('/', async (req, res) => {
 // @access  Private
 router.get('/mine', auth, async (req, res) => {
   try {
-    const proposals = await Proposal.find({ user: req.user.id }).sort({
-      date: -1
-    });
-
+    const proposals = await Proposal.find({ user: req.user.id })
+      .sort({ isActive: -1 })
+      .sort({
+        date: -1
+      });
     if (!proposals) {
       return res.status(404).json({
         msg: 'У вас нет сохраненных предложений по объектам недвижимости'
@@ -331,6 +332,7 @@ router.get(
     try {
       const proposals = await Proposal.find({
         $and: [
+          { isActive: true },
           { dealType: req.query.dealType },
           { 'address.province': req.query.province },
           { 'address.locality': req.query.locality },
@@ -548,7 +550,9 @@ router.get('/favorites', auth, async (req, res) => {
     //   proposals.push(await Proposal.findById(favorite));
     // }
 
-    const proposals = await Proposal.find({ _id: { $in: profile.favorites } });
+    const proposals = await Proposal.find({
+      _id: { $in: profile.favorites }
+    }).sort({ isActive: -1 });
 
     return res.json(proposals);
   } catch (err) {
@@ -1146,6 +1150,68 @@ router.put(
     }
   }
 );
+
+// @route   PUT api/proposals/activate/:id
+// @desc    Activate proposal
+// @access  Private
+router.put('/activate/:id', auth, async (req, res) => {
+  try {
+    const proposal = await Proposal.findById(req.params.id);
+
+    if (!proposal) {
+      return res.status(404).json({ msg: 'Предложение не найдено' });
+    }
+
+    if (proposal.user.toString() !== req.user.id) {
+      return res.status(401).json({
+        msg: 'Пользователь не имеет прав на изменение запрашиваемого ресурса'
+      });
+    }
+
+    proposal.isActive = true;
+
+    await proposal.save();
+
+    return res.json(proposal);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Предложение не найдено' });
+    }
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
+
+// @route   PUT api/proposals/deactivate/:id
+// @desc    Deactivate proposal
+// @access  Private
+router.put('/deactivate/:id', auth, async (req, res) => {
+  try {
+    const proposal = await Proposal.findById(req.params.id);
+
+    if (!proposal) {
+      return res.status(404).json({ msg: 'Предложение не найдено' });
+    }
+
+    if (proposal.user.toString() !== req.user.id) {
+      return res.status(401).json({
+        msg: 'Пользователь не имеет прав на изменение запрашиваемого ресурса'
+      });
+    }
+
+    proposal.isActive = false;
+
+    await proposal.save();
+
+    return res.json(proposal);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Предложение не найдено' });
+    }
+    console.error(err.message);
+    return res.status(500).json({ msg: 'Ошибка сервера' });
+  }
+});
 
 // @route   DELETE api/proposals/:id
 // @desc    Delete proposal by id

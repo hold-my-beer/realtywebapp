@@ -148,6 +148,10 @@ const ProposalSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   date: {
     type: Date,
     default: Date.now

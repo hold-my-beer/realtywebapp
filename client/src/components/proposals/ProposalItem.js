@@ -11,7 +11,8 @@ const ProposalItem = ({
     roomsNumber,
     address: { shortAddressLine },
     proposalPhotos,
-    price
+    price,
+    isActive
   }
 }) => {
   return (
@@ -45,6 +46,7 @@ const ProposalItem = ({
           Перейти к предложению
         </Link>
       </div>
+      {!isActive && <div className="deactivated">Снято с публикации</div>}
     </div>
   );
 };

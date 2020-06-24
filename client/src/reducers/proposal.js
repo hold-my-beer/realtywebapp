@@ -1,6 +1,8 @@
 import {
   GET_PROPOSAL,
   GET_PROPOSALS,
+  ACTIVATE_PROPOSAL,
+  DEACTIVATE_PROPOSAL,
   GET_FAVORITES,
   DELETE_PROPOSAL,
   CLEAR_PROPOSAL,
@@ -43,6 +45,12 @@ export default function (state = initialState, action) {
         ...state,
         proposal: null,
         proposals: [],
+        loading: false
+      };
+    case ACTIVATE_PROPOSAL:
+    case DEACTIVATE_PROPOSAL:
+      return {
+        ...state,
         loading: false
       };
     case SET_PROPOSAL_LOADING:
