@@ -23,14 +23,15 @@ export const getProfile = () => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROFILE_ERROR
+      type: PROFILE_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -47,14 +48,15 @@ export const getProfileByUserId = userId => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROFILE_ERROR
+      type: PROFILE_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -102,7 +104,8 @@ export const uploadProfilePhoto = file => async dispatch => {
     }
 
     dispatch({
-      type: PROFILE_ERROR
+      type: PROFILE_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -119,14 +122,15 @@ export const deleteProfilePhoto = () => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROFILE_ERROR
+      type: PROFILE_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -156,7 +160,8 @@ export const updateProfile = (formData, history) => async dispatch => {
     }
 
     dispatch({
-      type: PROFILE_ERROR
+      type: PROFILE_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -187,17 +192,19 @@ export const addToFavorites = proposalId => async dispatch => {
       dispatch(setAlert(err.response.data.msg, 'danger'));
 
       dispatch({
-        type: FAVORITES_ERROR
+        type: FAVORITES_ERROR,
+        payload: err.response.data
       });
     } else {
-      const errors = err.response.data.errors;
+      // const errors = err.response.data.errors;
 
-      if (errors) {
-        errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-      }
+      // if (errors) {
+      //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      // }
 
       dispatch({
-        type: PROFILE_ERROR
+        type: PROFILE_ERROR,
+        payload: err.response.data
       });
     }
   }
@@ -215,14 +222,15 @@ export const deleteFromFavorites = proposalId => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROFILE_ERROR
+      type: PROFILE_ERROR,
+      payload: err.response.data
     });
   }
 };

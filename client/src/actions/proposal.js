@@ -31,10 +31,11 @@ export const getCurrentUserProposals = () => async dispatch => {
     // if (errors) {
     //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
     // }
-    console.error(err);
+    // console.error(err);
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -135,7 +136,8 @@ export const getProposalsByParameters = (
       errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
     }
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -152,14 +154,15 @@ export const getProposalById = id => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -203,7 +206,8 @@ export const createProposal = (
     }
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -249,7 +253,8 @@ export const updateProposal = (
     }
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -301,14 +306,15 @@ export const activateProposal = (id, history) => async dispatch => {
 
     history.push('/my-proposals');
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -328,14 +334,15 @@ export const deactivateProposal = (id, history) => async dispatch => {
 
     history.push('/my-proposals');
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -355,14 +362,15 @@ export const deleteProposal = (id, history) => async dispatch => {
 
     history.push('/my-proposals');
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -381,15 +389,16 @@ export const getFavorites = () => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    console.log(err.response);
-    const errors = err.response.data.errors;
+    // console.log(err.response);
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: PROPOSAL_ERROR
+      type: PROPOSAL_ERROR,
+      payload: err.response.data
     });
   }
 };

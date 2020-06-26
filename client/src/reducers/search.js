@@ -14,6 +14,7 @@ const initialState = {
   search: null,
   postponedSearch: null,
   searches: [],
+  error: {},
   loading: false
 };
 
@@ -54,6 +55,7 @@ export default function (state = initialState, action) {
         search: null,
         postponedSearch: null,
         searches: [],
+        error: {},
         loading: false
       };
     case SET_SEARCH_LOADING:
@@ -67,6 +69,7 @@ export default function (state = initialState, action) {
         search: null,
         postponedSearch: null,
         searches: [],
+        error: payload,
         loading: false
       };
     default:

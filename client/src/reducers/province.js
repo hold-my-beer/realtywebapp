@@ -7,6 +7,7 @@ import {
 
 const initialState = {
   provinces: [],
+  error: {},
   loading: false
 };
 
@@ -24,12 +25,14 @@ export default function (state = initialState, action) {
       return {
         ...state,
         provinces: [],
+        error: {},
         loading: false
       };
     case PROVINCE_ERROR:
       return {
         ...state,
         provinces: [],
+        error: payload,
         loading: false
       };
     case SET_PROVINCE_LOADING:

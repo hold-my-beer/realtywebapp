@@ -23,14 +23,15 @@ export const getSearches = () => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: SEARCH_ERROR
+      type: SEARCH_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -46,14 +47,15 @@ export const getSearchById = id => async dispatch => {
       payload: res.data
     });
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: SEARCH_ERROR
+      type: SEARCH_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -95,7 +97,8 @@ export const addSearch = (
     }
 
     dispatch({
-      type: SEARCH_ERROR
+      type: SEARCH_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -140,7 +143,8 @@ export const editSearch = (
     }
 
     dispatch({
-      type: SEARCH_ERROR
+      type: SEARCH_ERROR,
+      payload: err.response.data
     });
   }
 };
@@ -177,19 +181,20 @@ export const deleteSearch = (id, history) => async dispatch => {
 
     history.push('/my-searches');
   } catch (err) {
-    const errors = err.response.data.errors;
+    // const errors = err.response.data.errors;
 
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
+    // if (errors) {
+    //   errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    // }
 
     dispatch({
-      type: SEARCH_ERROR
+      type: SEARCH_ERROR,
+      payload: err.response.data
     });
   }
 };
 
-// Set proposal loading
+// Set search loading
 export const setSearchLoading = () => dispatch => {
   dispatch({
     type: SET_SEARCH_LOADING

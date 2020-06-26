@@ -12,7 +12,8 @@ import {
 const initialState = {
   profile: null,
   sellerProfile: null,
-  loading: false
+  loading: false,
+  error: {}
 };
 
 export default function (state = initialState, action) {
@@ -34,16 +35,25 @@ export default function (state = initialState, action) {
         loading: false
       };
     case CLEAR_PROFILE:
+      return {
+        ...state,
+        profile: null,
+        sellerProfile: null,
+        error: {},
+        loading: false
+      };
     case PROFILE_ERROR:
       return {
         ...state,
         profile: null,
         sellerProfile: null,
+        error: payload,
         loading: false
       };
     case FAVORITES_ERROR:
       return {
         ...state,
+        error: payload,
         loading: false
       };
     case SET_PROFILE_LOADING:

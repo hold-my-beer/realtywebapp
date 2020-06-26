@@ -13,6 +13,7 @@ import {
 const initialState = {
   proposal: null,
   proposals: [],
+  error: {},
   loading: false
 };
 
@@ -40,11 +41,19 @@ export default function (state = initialState, action) {
         loading: false
       };
     case CLEAR_PROPOSAL:
+      return {
+        ...state,
+        proposal: null,
+        proposals: [],
+        error: {},
+        loading: false
+      };
     case PROPOSAL_ERROR:
       return {
         ...state,
         proposal: null,
         proposals: [],
+        error: payload,
         loading: false
       };
     case ACTIVATE_PROPOSAL:
